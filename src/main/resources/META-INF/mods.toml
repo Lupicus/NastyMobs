@@ -1,0 +1,22 @@
+modLoader="javafml"
+loaderVersion="[30,)"
+[[mods]]
+modId="nasty"
+version="${file.jarVersion}"
+displayName="Nasty Mobs"
+displayURL="https://www.curseforge.com/minecraft/mc-mods/nasty-mobs"
+logoFile="logo.png"
+authors="Lupicus, REchols, MacTso"
+description='''Nasty Mobs.'''
+[[dependencies.nasty]]
+    modId="forge"
+    mandatory=true
+    versionRange="[30,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.nasty]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.15.1,1.16)"
+    ordering="NONE"
+    side="BOTH"

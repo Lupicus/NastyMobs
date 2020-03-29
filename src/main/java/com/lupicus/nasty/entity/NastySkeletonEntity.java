@@ -296,31 +296,30 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 		{
 			String line = array[i].trim();
 			String[] fields = line.split(",");
-			if (fields.length == 4)  // biome, variant, hp, speed
+			try
 			{
-				try
+				// biome, variant, hp, speed
+				if (fields.length != 4)
+					throw new Exception("bad number of fields");
+				String biomeName = fields[0].trim();
+				String variant = fields[1].trim();
+				Biome biome = ForgeRegistries.BIOMES.getValue(new ResourceLocation(biomeName));
+				if (biome == null)
+					throw new Exception("bad biome value");
+				if (!variant.equals("*"))
 				{
-					String biomeName = fields[0].trim();
-					String variant = fields[1].trim();
-					Biome biome = ForgeRegistries.BIOMES.getValue(new ResourceLocation(biomeName));
-					if (biome == null)
-						throw new Exception("bad biome value");
-					if (!variant.equals("*"))
-					{
-						int j = Integer.parseInt(variant);
-						if (j < 0 || j >= NVARIANTS)
-							throw new Exception("bad variant value");
-						variant = Integer.toString(j);
-					}
-					biomeMap.put(biomeName + ":" + variant, new AdjParms(Double.parseDouble(fields[2]), Double.parseDouble(fields[3])));
+					int j = Integer.parseInt(variant);
+					if (j < 0 || j >= NVARIANTS)
+						throw new Exception("bad variant value");
+					variant = Integer.toString(j);
 				}
-				catch (Exception e)
-				{
-					LOGGER.warn("Skipping bad Biome adjustment= " + line);
-				}
+				biomeMap.put(biomeName + ":" + variant, new AdjParms(Double.parseDouble(fields[2]), Double.parseDouble(fields[3])));
 			}
-			else
+			catch (Exception e)
+			{
 				LOGGER.warn("Skipping bad Biome adjustment= " + line);
+				LOGGER.warn("Reason= " + e.getMessage());
+			}
 		}
 	}
 

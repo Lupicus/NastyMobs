@@ -8,7 +8,10 @@ import com.lupicus.nasty.util.SpawnData;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
+import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.monster.MonsterEntity;
+import net.minecraft.world.gen.Heightmap;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.DungeonHooks;
@@ -29,6 +32,8 @@ public class ModEntities
 	public static void register(IForgeRegistry<EntityType<?>> forgeRegistry)
 	{
 		forgeRegistry.register(NASTY_SKELETON);
+
+		EntitySpawnPlacementRegistry.register(NASTY_SKELETON, EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, MonsterEntity::func_223325_c);
 	}
 
 	@OnlyIn(Dist.CLIENT)

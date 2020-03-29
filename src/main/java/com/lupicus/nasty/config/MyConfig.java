@@ -183,7 +183,7 @@ public class MyConfig
 			spawnBiome = builder
 					.comment("Spawn in Biome weight")
 					.translation(sectionTrans + "spawn_biome")
-					.defineInRange("SpawnBiome", 15, 0, 100);
+					.defineInRange("SpawnBiome", 25, 0, 100);
 			spawnFeature = builder
 					.comment("Spawn in Feature weight")
 					.translation(sectionTrans + "spawn_feature")
@@ -219,7 +219,7 @@ public class MyConfig
 			virusChance = builder
 					.comment("Virus Chance for spreading")
 					.translation(sectionTrans + "virus_chance")
-					.defineInRange("virusChance", () -> 0.05, 0.0, 1.0);
+					.defineInRange("virusChance", () -> 0.02, 0.0, 1.0);
 			spawnTempBased = builder
 					.comment("Spawn type based on Tempature")
 					.translation(sectionTrans + "spawn_type_temp_based")
@@ -231,7 +231,7 @@ public class MyConfig
 			biomeAdjustments = builder
 					.comment("Biome adjustments (biome,variant,hp,speed)")
 					.translation(sectionTrans + "biome_adjuments")
-					.define("biomeAdjustments", "minecraft:plains,*,-0.2,0.2;minecraft:swamp,0,0.2,0.0;minecraft:swamp,*,0.1,-0.1;minecraft:badlands,*,0.3,0.3;minecraft:mesa,1,0.3,0.3");
+					.define("biomeAdjustments", "minecraft:plains,*,-0.2,0.2;minecraft:swamp,0,0.2,0.0;minecraft:swamp,*,0.1,-0.1;minecraft:badlands,*,0.3,0.3;minecraft:dark_forest_hills,*,0.3,0.3");
 			builder.pop();
 		}
 	}

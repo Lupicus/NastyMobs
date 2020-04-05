@@ -1,6 +1,7 @@
 package com.lupicus.nasty.entity;
 
 import java.util.HashMap;
+import java.util.Random;
 
 import com.lupicus.nasty.config.MyConfig;
 import com.lupicus.nasty.entity.ai.controller.JumpMovementController;
@@ -59,6 +60,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -379,6 +381,21 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 			}
 		}
 		return defVariant;
+	}
+
+	public static boolean isValidLightLevel(IWorld worldIn, BlockPos pos, Random randomIn)
+	{
+		if (worldIn.getLightFor(LightType.SKY, pos) > randomIn.nextInt(32))
+			return false;
+		int i = worldIn.getWorld().isThundering() ? worldIn.getNeighborAwareLightSubtracted(pos, 10)
+				: worldIn.getLight(pos);
+		return i <= randomIn.nextInt(MyConfig.spawnLightLevel + 1);
+	}
+
+	public static boolean canSpawn(EntityType<? extends NastySkeletonEntity> type, IWorld worldIn, SpawnReason reason,
+			BlockPos pos, Random randomIn)
+	{
+		return worldIn.getDifficulty() != Difficulty.PEACEFUL && isValidLightLevel(worldIn, pos, randomIn) && canSpawnOn(type, worldIn, reason, pos, randomIn);
 	}
 
 	protected void setPotionsBasedOnDifficulty(DifficultyInstance difficulty)

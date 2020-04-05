@@ -10,7 +10,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -33,7 +32,7 @@ public class ModEntities
 	{
 		forgeRegistry.register(NASTY_SKELETON);
 
-		EntitySpawnPlacementRegistry.register(NASTY_SKELETON, EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, MonsterEntity::func_223325_c);
+		EntitySpawnPlacementRegistry.register(NASTY_SKELETON, EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, NastySkeletonEntity::canSpawn);
 	}
 
 	@OnlyIn(Dist.CLIENT)
@@ -49,7 +48,7 @@ public class ModEntities
 			SpawnData.copyBiomeSpawn(EntityType.SKELETON, NASTY_SKELETON, val, 1, 3);
 		val = MyConfig.spawnFeature;
 		if (val > 0)
-			SpawnData.copyFeatureSpawn(EntityType.SKELETON, NASTY_SKELETON, val, 1, 3);
+			SpawnData.copyFeatureSpawn(EntityType.SKELETON, NASTY_SKELETON, val, 3, 4);
 		val = MyConfig.spawnDungeon;
 		if (val > 0)
 			DungeonHooks.addDungeonMob(NASTY_SKELETON, val);

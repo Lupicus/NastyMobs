@@ -45,6 +45,7 @@ public class MyConfig
 	public static int spawnBiome;
 	public static int spawnFeature;
 	public static int spawnDungeon;
+	public static int spawnLightLevel;
 	public static boolean spawnTempBased;
 	public static int[] spawnVariantWeights;
 	public static String[] biomeAdjustments;
@@ -72,6 +73,7 @@ public class MyConfig
 		spawnBiome = SERVER.spawnBiome.get();
 		spawnFeature = SERVER.spawnFeature.get();
 		spawnDungeon = SERVER.spawnDungeon.get();
+		spawnLightLevel = SERVER.spawnLightLevel.get();
 		explosiveArrowOnArmor = SERVER.explosiveArrowOnArmor.get();
 		explosiveArrowOnBlock = SERVER.explosiveArrowOnBlock.get();
 		explosiveArrowOnShield = SERVER.explosiveArrowOnShield.get();
@@ -155,11 +157,13 @@ public class MyConfig
 		public final IntValue spawnBiome;
 		public final IntValue spawnFeature;
 		public final IntValue spawnDungeon;
+		public final IntValue spawnLightLevel;
 		public final BooleanValue spawnTempBased;
 		public final ConfigValue<String> spawnVariantWeights;
 		public final ConfigValue<String> biomeAdjustments;
 
-		public Server(ForgeConfigSpec.Builder builder) {
+		public Server(ForgeConfigSpec.Builder builder)
+		{
 			String baseTrans = Main.MODID + ".config.";
 			String sectionTrans;
 			builder.push("Nasty Skeleton");
@@ -183,31 +187,35 @@ public class MyConfig
 			spawnBiome = builder
 					.comment("Spawn in Biome weight")
 					.translation(sectionTrans + "spawn_biome")
-					.defineInRange("SpawnBiome", 25, 0, 100);
+					.defineInRange("SpawnBiome", 100, 0, 200);
 			spawnFeature = builder
 					.comment("Spawn in Feature weight")
 					.translation(sectionTrans + "spawn_feature")
-					.defineInRange("SpawnFeature", 2, 0, 20);
+					.defineInRange("SpawnFeature", 5, 0, 20);
 			spawnDungeon = builder
 					.comment("Spawn in Dungeon weight")
 					.translation(sectionTrans + "spawn_dungeon")
-					.defineInRange("SpawnDungeon", 15, 0, 100);
+					.defineInRange("SpawnDungeon", 100, 0, 200);
+			spawnLightLevel = builder
+					.comment("Spawn light level (use 7 to be same as normal skeletons)")
+					.translation(sectionTrans + "spawn_light_level")
+					.defineInRange("SpawnLightLevel", 9, 0, 15);
 			arrowDamageMultiplier = builder
 					.comment("Arrow Damage Multiplier (damage to skeleton)")
 					.translation(sectionTrans + "arrow_damage_multiplier")
-					.defineInRange("arrowDamageMultiplier", () -> 0.5, 0.0, 1.0);
+					.defineInRange("ArrowDamageMultiplier", () -> 0.5, 0.0, 1.0);
 			explosiveArrowOnArmor = builder
 					.comment("Explosive Arrow cause Armor to drop")
 					.translation(sectionTrans + "explosive_arrow_armor")
-					.define("explosiveArrowOnArmor", true);
+					.define("ExplosiveArrowOnArmor", true);
 			explosiveArrowOnBlock = builder
 					.comment("Explosive Arrow cause Block to drop")
 					.translation(sectionTrans + "explosive_arrow_block")
-					.define("explosiveArrowOnBlock", true);
+					.define("ExplosiveArrowOnBlock", true);
 			explosiveArrowOnShield = builder
 					.comment("Explosive Arrow cause Shield to drop")
 					.translation(sectionTrans + "explosive_arrow_shield")
-					.define("explosiveArrowOnShield", false);
+					.define("ExplosiveArrowOnShield", false);
 			explosiveArrowStrength = builder
 					.comment("Explosive Arrow strength")
 					.translation(sectionTrans + "explosive_arrow_strength")
@@ -215,23 +223,23 @@ public class MyConfig
 			virusDistance = builder
 					.comment("Virus Distance for spreading")
 					.translation(sectionTrans + "virus_distance")
-					.defineInRange("virusDistance", () -> 5.0, 0.0, 20.0);
+					.defineInRange("VirusDistance", () -> 5.0, 0.0, 20.0);
 			virusChance = builder
 					.comment("Virus Chance for spreading")
 					.translation(sectionTrans + "virus_chance")
-					.defineInRange("virusChance", () -> 0.02, 0.0, 1.0);
+					.defineInRange("VirusChance", () -> 0.02, 0.0, 1.0);
 			spawnTempBased = builder
 					.comment("Spawn type based on Tempature")
 					.translation(sectionTrans + "spawn_type_temp_based")
-					.define("spawnTempBased", false);
+					.define("SpawnTempBased", false);
 			spawnVariantWeights = builder
 					.comment("Spawn weights (Green,Red,Purple,Cyan,Orange,Yellow)")
 					.translation(sectionTrans + "spawn_weights")
-					.define("spawnVariantWeights", "5,5,5,5,5,1");
+					.define("SpawnVariantWeights", "5,5,5,5,5,1");
 			biomeAdjustments = builder
 					.comment("Biome adjustments (biome,variant,hp,speed)")
 					.translation(sectionTrans + "biome_adjuments")
-					.define("biomeAdjustments", "minecraft:plains,*,-0.2,0.2;minecraft:swamp,0,0.2,0.0;minecraft:swamp,*,0.1,-0.1;minecraft:badlands,*,0.3,0.3;minecraft:dark_forest_hills,*,0.3,0.3");
+					.define("BiomeAdjustments", "minecraft:plains,*,-0.2,0.2;minecraft:swamp,0,0.2,0.0;minecraft:swamp,*,0.1,-0.1;minecraft:badlands,*,0.3,0.3;minecraft:dark_forest_hills,*,0.3,0.3");
 			builder.pop();
 		}
 	}

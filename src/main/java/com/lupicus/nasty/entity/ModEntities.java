@@ -4,6 +4,7 @@ import com.lupicus.nasty.Main;
 import com.lupicus.nasty.config.MyConfig;
 import com.lupicus.nasty.renderer.entity.NastySkeletonRenderer;
 import com.lupicus.nasty.util.SpawnData;
+import com.lupicus.nasty.renderer.entity.NastyWolfRenderer;
 
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.entity.Entity;
@@ -19,6 +20,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 public class ModEntities
 {
 	public static final EntityType<NastySkeletonEntity> NASTY_SKELETON = register("skeleton", EntityType.Builder.create(NastySkeletonEntity::new, EntityClassification.MONSTER).size(0.6F, 1.99F));
+	public static final EntityType<NastyWolfEntity> NASTY_WOLF = register("wolf", EntityType.Builder.create(NastyWolfEntity::new, EntityClassification.MONSTER).size(0.6F, 0.85F));
 
 	private static <T extends Entity> EntityType<T> register(String name, EntityType.Builder<T> builder)
 	{
@@ -30,7 +32,7 @@ public class ModEntities
 
 	public static void register(IForgeRegistry<EntityType<?>> forgeRegistry)
 	{
-		forgeRegistry.register(NASTY_SKELETON);
+		forgeRegistry.registerAll(NASTY_SKELETON, NASTY_WOLF);
 
 		EntitySpawnPlacementRegistry.register(NASTY_SKELETON, EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, NastySkeletonEntity::canSpawn);
 	}
@@ -39,6 +41,7 @@ public class ModEntities
 	public static void register(EntityRendererManager renderManager)
 	{
 		renderManager.register(NASTY_SKELETON, new NastySkeletonRenderer(renderManager));
+		renderManager.register(NASTY_WOLF, new NastyWolfRenderer(renderManager));
 	}
 
 	public static void addSpawnData()

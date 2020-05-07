@@ -11,6 +11,7 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
 import net.minecraftforge.common.ForgeConfigSpec.DoubleValue;
+import net.minecraftforge.common.ForgeConfigSpec.EnumValue;
 import net.minecraftforge.common.ForgeConfigSpec.IntValue;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -42,6 +43,7 @@ public class MyConfig
 	public static float explosiveArrowStrength;
 	public static float virusDistance;
 	public static float virusChance;
+	public static float virusChance2;
 	public static int spawnBiome;
 	public static int spawnFeature;
 	public static int spawnDungeon;
@@ -49,6 +51,7 @@ public class MyConfig
 	public static boolean spawnTempBased;
 	public static int[] spawnVariantWeights;
 	public static String[] biomeAdjustments;
+	public static VMode virusMode2;
 
 	@SubscribeEvent
 	public static void onModConfigEvent(final ModConfig.ModConfigEvent configEvent)
@@ -80,9 +83,11 @@ public class MyConfig
 		explosiveArrowStrength = (float) SERVER.explosiveArrowStrength.get().doubleValue();
 		virusDistance = (float) SERVER.virusDistance.get().doubleValue();
 		virusChance = (float) SERVER.virusChance.get().doubleValue();
+		virusChance2 = (float) SERVER.virusChance2.get().doubleValue();
 		spawnTempBased = SERVER.spawnTempBased.get();
 		spawnVariantWeights = extract(NastySkeletonEntity.NVARIANTS, SERVER.spawnVariantWeights.get());
 		biomeAdjustments = extract(SERVER.biomeAdjustments.get());
+		virusMode2 = SERVER.virusMode2.get();
 		NastySkeletonEntity.configUpdate();
 	}
 
@@ -154,6 +159,7 @@ public class MyConfig
 		public final DoubleValue explosiveArrowStrength;
 		public final DoubleValue virusDistance;
 		public final DoubleValue virusChance;
+		public final DoubleValue virusChance2;
 		public final IntValue spawnBiome;
 		public final IntValue spawnFeature;
 		public final IntValue spawnDungeon;
@@ -161,6 +167,7 @@ public class MyConfig
 		public final BooleanValue spawnTempBased;
 		public final ConfigValue<String> spawnVariantWeights;
 		public final ConfigValue<String> biomeAdjustments;
+		public final EnumValue<VMode> virusMode2;
 
 		public Server(ForgeConfigSpec.Builder builder)
 		{
@@ -241,6 +248,25 @@ public class MyConfig
 					.translation(sectionTrans + "biome_adjuments")
 					.define("BiomeAdjustments", "minecraft:plains,*,-0.2,0.2;minecraft:swamp,0,0.2,0.0;minecraft:swamp,*,0.1,-0.1;minecraft:badlands,*,0.3,0.3;minecraft:dark_forest_hills,*,0.3,0.3");
 			builder.pop();
+
+			builder.push("Nasty Wolf");
+			sectionTrans = baseTrans + "wolf.";
+			virusMode2 = builder
+					.comment("Virus Mode")
+					.translation(sectionTrans + "virus_mode")
+					.defineEnum("VirusMode", VMode.WILD);
+			virusChance2 = builder
+					.comment("Virus Chance for spreading")
+					.translation(sectionTrans + "virus_chance")
+					.defineInRange("VirusChance", () -> 0.25, 0.0, 1.0);
+			builder.pop();
 		}
+	}
+
+	public enum VMode
+	{
+		OFF,
+		WILD,
+		UNNAMED
 	}
 }

@@ -13,12 +13,13 @@ import net.minecraftforge.registries.IForgeRegistry;
 
 public class ModItems
 {
-	public static final Item NASTY_SKELETON_SPAWN_EGG = new SpawnEggItem(ModEntities.NASTY_SKELETON, 0x006000, 0xFFFFFF, new Properties().group(ItemGroup.MISC)).setRegistryName("skeleton_spawn_egg");
+	public static final Item NASTY_SKELETON_SPAWN_EGG = new SpawnEggItem(ModEntities.NASTY_SKELETON, 0xD7D3D3, 0x006000, new Properties().group(ItemGroup.MISC)).setRegistryName("skeleton_spawn_egg");
+	public static final Item NASTY_WOLF_SPAWN_EGG = new SpawnEggItem(ModEntities.NASTY_WOLF, 0xC1C1C1, 0x008000, new Properties().group(ItemGroup.MISC)).setRegistryName("wolf_spawn_egg");
 	public static final Item EXPLOSIVE_ARROW = new ExplosiveArrowItem(new Properties().group(ItemGroup.COMBAT)).setRegistryName("explosive_arrow");
 
 	public static void register(IForgeRegistry<Item> forgeRegistry)
 	{
-		forgeRegistry.register(NASTY_SKELETON_SPAWN_EGG);
+		forgeRegistry.registerAll(NASTY_SKELETON_SPAWN_EGG, NASTY_WOLF_SPAWN_EGG);
 		forgeRegistry.register(EXPLOSIVE_ARROW);
 	}
 

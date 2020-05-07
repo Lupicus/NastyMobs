@@ -32,6 +32,7 @@ import net.minecraft.entity.ai.goal.WaterAvoidingRandomWalkingGoal;
 import net.minecraft.entity.monster.AbstractSkeletonEntity;
 import net.minecraft.entity.monster.SkeletonEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
+import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
@@ -523,7 +524,16 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 				attr.setBaseValue(new_range);
 			this.setRevengeTarget(player);
 		}
-		return super.attackEntityFrom(source, amount);
+		// Infect wolves that attack this skeleton
+		boolean flag = super.attackEntityFrom(source, amount);
+		entity = source.getImmediateSource();
+		if (flag && entity instanceof WolfEntity)
+		{
+			WolfEntity mob = (WolfEntity) entity;
+			if (NastyWolfEntity.canInfect(mob))
+				NastyWolfEntity.onInfect(mob);
+		}
+		return flag;
 	}
 
 	@Override

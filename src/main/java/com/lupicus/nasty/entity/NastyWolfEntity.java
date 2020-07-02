@@ -31,8 +31,6 @@ import net.minecraft.world.World;
 
 public class NastyWolfEntity extends WolfEntity // MonsterEntity
 {
-//	private static final Logger LOGGER = LogManager.getLogger();
-
 	public NastyWolfEntity(EntityType<? extends WolfEntity> type, World worldIn)
 	{
 		super(type, worldIn);
@@ -53,7 +51,7 @@ public class NastyWolfEntity extends WolfEntity // MonsterEntity
 		//this.goalSelector.addGoal(9, new BegGoal(this, 8.0F));
 		this.goalSelector.addGoal(10, new LookAtGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.addGoal(10, new LookRandomlyGoal(this));
-	    this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
+		this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
 		this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
 		//this.targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
 		//this.targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));

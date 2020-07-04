@@ -6,7 +6,7 @@ import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biome.SpawnListEntry;
-import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.structure.Structure;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class SpawnData
@@ -26,7 +26,7 @@ public class SpawnData
 
     public static void copyFeatureSpawn(EntityType<?> oldMob, EntityType<?> newMob, int weight, int min, int max)
     {
-    	for (Feature<?> f : ForgeRegistries.FEATURES)
+    	for (Structure<?> f : ForgeRegistries.STRUCTURE_FEATURES)
     	{
     		List<SpawnListEntry> list = f.getSpawnList();
     		if (list.stream().anyMatch(e -> oldMob.equals(e.entityType)))
@@ -55,7 +55,7 @@ public class SpawnData
 
 	public static void removeFeatureSpawn(EntityType<?> mob)
 	{
-    	for (Feature<?> f : ForgeRegistries.FEATURES)
+    	for (Structure<?> f : ForgeRegistries.STRUCTURE_FEATURES)
     	{
     		List<SpawnListEntry> list = f.getSpawnList();
     		for (int i = 0; i < list.size(); ++i)

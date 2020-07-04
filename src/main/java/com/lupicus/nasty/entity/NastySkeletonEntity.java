@@ -15,11 +15,12 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ILivingEntityData;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.AttributeModifier.Operation;
-import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.ai.goal.FleeSunGoal;
 import net.minecraft.entity.ai.goal.HurtByTargetGoal;
 import net.minecraft.entity.ai.goal.LookAtGoal;
@@ -57,13 +58,14 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.storage.IWorldInfo;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasVirus
@@ -125,13 +127,11 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 		return SoundEvents.ENTITY_SKELETON_STEP;
 	}
 
-	@Override
-	protected void registerAttributes()
-	{
-		super.registerAttributes();
-		this.getAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.30D);
-		this.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(24.0D);
-		this.getAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(4.0D);
+	public static AttributeModifierMap.MutableAttribute registerAttributes() {
+		return AbstractSkeletonEntity.func_234275_m_()
+				.func_233815_a_(Attributes.field_233821_d_, 0.30D) // movement_speed
+				.func_233815_a_(Attributes.field_233819_b_, 24.0D) // follow_range
+				.func_233815_a_(Attributes.field_233823_f_, 4.0D); // attack_damage
 	}
 
 	@Override
@@ -220,10 +220,11 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 	public ILivingEntityData onInitialSpawn(IWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason,
 			ILivingEntityData spawnDataIn, CompoundNBT dataTag)
 	{
-		Biome biome = worldIn.getBiome(getPosition());
+		BlockPos pos = func_233580_cy_(); // getPosition
+		Biome biome = worldIn.getBiome(pos);
 		if (MyConfig.spawnTempBased && (reason == SpawnReason.NATURAL || reason == SpawnReason.CHUNK_GENERATION))
 		{
-			float temp = biome.getTemperature(getPosition());
+			float temp = biome.getTemperature(pos);
 			int subtype = (singleVariant) ? defVariant : randomTempBased(temp);
 			dataManager.set(SUB_TYPE, subtype);
 		}
@@ -235,14 +236,14 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 
 		if (difficultyIn.getDifficulty() == Difficulty.HARD)
 		{
-			this.getAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).applyModifier(new AttributeModifier("difficulty", 3.0, Operation.ADDITION));
+			this.getAttribute(Attributes.field_233823_f_).func_233767_b_(new AttributeModifier("difficulty", 3.0, Operation.ADDITION));
 		}
 
 		spawnDataIn = super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
 
 		// calculate new health using horizontal distance (i.e. ignore Y)
-		BlockPos pos = this.getPosition();
-		BlockPos spos = worldIn.getDimension().getSpawnPoint();
+		IWorldInfo winfo = worldIn.getWorldInfo();
+		BlockPos spos = new BlockPos(winfo.getSpawnX(), winfo.getSpawnY(), winfo.getSpawnZ());
 		double dx = (double) pos.getX() - (double) spos.getX();
 		double dz = (double) pos.getZ() - (double) spos.getZ();
 		double d2 = dx * dx + dz * dz;
@@ -257,7 +258,7 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 			temp = ((MyConfig.maxHealth - MyConfig.minHealth) * p + MyConfig.minHealth);
 		}
 		float health = (float) Math.floor(temp);
-		this.getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(health);
+		this.getAttribute(Attributes.field_233818_a_).setBaseValue(health);
 		this.setHealth(getMaxHealth());
 
 		// adjust by biome
@@ -270,13 +271,13 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 			double val = adj.hp;
 			if (val != 0.0)
 			{
-				this.getAttribute(SharedMonsterAttributes.MAX_HEALTH).applyModifier(new AttributeModifier("biome", val, Operation.MULTIPLY_BASE));
+				this.getAttribute(Attributes.field_233818_a_).func_233767_b_(new AttributeModifier("biome", val, Operation.MULTIPLY_BASE));
 				this.setHealth(getMaxHealth());
 			}
 			val = adj.speed;
 			if (val != 0.0)
 			{
-				this.getAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).applyModifier(new AttributeModifier("biome", val, Operation.MULTIPLY_BASE));
+				this.getAttribute(Attributes.field_233821_d_).func_233767_b_(new AttributeModifier("biome", val, Operation.MULTIPLY_BASE));
 			}
 		}
 
@@ -443,7 +444,7 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 		AbstractArrowEntity abstractarrowentity = this.fireArrow(itemstack, distanceFactor);
 		if (this.getHeldItemMainhand().getItem() instanceof BowItem)
 			abstractarrowentity = ((BowItem) this.getHeldItemMainhand().getItem())
-					.customeArrow(abstractarrowentity);
+					.customArrow(abstractarrowentity);
 		enchantArrow(abstractarrowentity);
 		double d0 = target.getPosX() - this.getPosX();
 		double d1 = target.getPosYHeight(0.3333333333333333D) - abstractarrowentity.getPosY();
@@ -518,7 +519,7 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 		if (amount > 0.0F && entity != null && entity instanceof ServerPlayerEntity)
 		{
 			PlayerEntity player = (PlayerEntity) entity;
-			IAttributeInstance attr = this.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE);
+			ModifiableAttributeInstance attr = this.getAttribute(Attributes.field_233819_b_);
 			double new_range = 64.0;
 			if (new_range > attr.getBaseValue())
 				attr.setBaseValue(new_range);
@@ -551,8 +552,8 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 	public void onInfect(Entity mob)
 	{
 		World world = mob.world;
-		Vec3d mobpos = mob.getPositionVec();
-		if (mob.onGround)
+		Vector3d mobpos = mob.getPositionVec();
+		if (mob.func_233570_aj_()) // onGround
 			mob.setMotion(0, 0, 0);
 
 		NastySkeletonEntity newmob = ModEntities.NASTY_SKELETON.create(world);
@@ -595,7 +596,7 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 			newmob.setMotion(mob.getMotion());
 
 		// SoundEvents.ENTITY_ZOMBIE_VILLAGER_CONVERTED
-	    world.playEvent((PlayerEntity)null, 1027, new BlockPos(newmob), 0);
+	    world.playEvent((PlayerEntity)null, 1027, newmob.func_233580_cy_(), 0);
 		world.addEntity(newmob);
 		mob.remove();
 	}

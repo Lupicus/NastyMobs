@@ -11,6 +11,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.attributes.GlobalEntityTypeAttributes;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -35,6 +36,9 @@ public class ModEntities
 		forgeRegistry.registerAll(NASTY_SKELETON, NASTY_WOLF);
 
 		EntitySpawnPlacementRegistry.register(NASTY_SKELETON, EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, NastySkeletonEntity::canSpawn);
+
+		GlobalEntityTypeAttributes.put(NASTY_SKELETON, NastySkeletonEntity.registerAttributes().func_233813_a_());
+		GlobalEntityTypeAttributes.put(NASTY_WOLF, NastyWolfEntity.registerAttibutes().func_233813_a_());
 	}
 
 	@OnlyIn(Dist.CLIENT)

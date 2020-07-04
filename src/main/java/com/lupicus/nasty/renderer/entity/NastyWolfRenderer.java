@@ -23,6 +23,6 @@ public class NastyWolfRenderer extends WolfRenderer
 	@Override
 	public ResourceLocation getEntityTexture(WolfEntity entity)
 	{
-		return entity.isAngry() ? ANGRY_TEXTURE : TEXTURE;
+		return entity.func_233678_J__() ? ANGRY_TEXTURE : TEXTURE; // isAngry
 	}
 }

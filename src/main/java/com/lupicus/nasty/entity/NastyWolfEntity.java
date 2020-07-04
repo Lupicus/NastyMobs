@@ -9,24 +9,26 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ILivingEntityData;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.ai.attributes.AttributeModifierMap;
+import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.HurtByTargetGoal;
 import net.minecraft.entity.ai.goal.LeapAtTargetGoal;
 import net.minecraft.entity.ai.goal.LookAtGoal;
 import net.minecraft.entity.ai.goal.LookRandomlyGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
-import net.minecraft.entity.ai.goal.SitGoal;
+import net.minecraft.entity.ai.goal.NonTamedTargetGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WaterAvoidingRandomWalkingGoal;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
 public class NastyWolfEntity extends WolfEntity // MonsterEntity
@@ -39,9 +41,8 @@ public class NastyWolfEntity extends WolfEntity // MonsterEntity
 	@Override
 	protected void registerGoals()
 	{
-		this.sitGoal = new SitGoal(this);
 		this.goalSelector.addGoal(1, new SwimGoal(this));
-		//this.goalSelector.addGoal(2, this.sitGoal);
+		//this.goalSelector.addGoal(2, new SitGoal(this));
 		//this.goalSelector.addGoal(3, new WolfEntity.AvoidEntityGoal(this, LlamaEntity.class, 24.0F, 1.5D, 1.5D));
 		this.goalSelector.addGoal(4, new LeapAtTargetGoal(this, 0.4F));
 		this.goalSelector.addGoal(5, new AttackGoal(this, 1.0D, true));
@@ -56,19 +57,19 @@ public class NastyWolfEntity extends WolfEntity // MonsterEntity
 		//this.targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
 		//this.targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
 		//this.targetSelector.addGoal(3, (new HurtByTargetGoal(this)).setCallsForHelp());
-		this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, AnimalEntity.class, 10, false, false, field_213441_bD));
-		//this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, TurtleEntity.class, 10, false, false, TurtleEntity.TARGET_DRY_BABY));
-		//this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, AbstractSkeletonEntity.class, false));
+		//this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, 10, true, false, this::func_233680_b_));
+		this.targetSelector.addGoal(5, new NonTamedTargetGoal<>(this, AnimalEntity.class, false, TARGET_ENTITIES));		
+		//this.targetSelector.addGoal(6, new NonTamedTargetGoal<>(this, TurtleEntity.class, false, TurtleEntity.TARGET_DRY_BABY));
+		//this.targetSelector.addGoal(7, new NearestAttackableTargetGoal<>(this, AbstractSkeletonEntity.class, false));
+		//this.targetSelector.addGoal(8, new ResetAngerGoal<>(this, true));
 	}
 
-	@Override
-	protected void registerAttributes()
-	{
-		super.registerAttributes();
-		this.getAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue((double) 0.35F);
-		this.getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(20.0D);
-		this.getAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(4.0D);
-		this.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(32.0D);
+	public static AttributeModifierMap.MutableAttribute registerAttibutes() {
+		return WolfEntity.func_234233_eS_()
+				.func_233815_a_(Attributes.field_233821_d_, (double) 0.35F) // movement_speed
+				.func_233815_a_(Attributes.field_233818_a_, 20.0D) // max_health
+				.func_233815_a_(Attributes.field_233823_f_, 4.0D) // attack_damage
+				.func_233815_a_(Attributes.field_233819_b_, 32.0D); // follow_range
 	}
 
 	@Override
@@ -113,9 +114,9 @@ public class NastyWolfEntity extends WolfEntity // MonsterEntity
 	}
 
 	@Override
-	public boolean processInteract(PlayerEntity player, Hand hand)
+	public ActionResultType func_230254_b_(PlayerEntity player, Hand hand) // processInteract
 	{
-		return false;
+		return ActionResultType.PASS;
 	}
 
 	@Override
@@ -140,8 +141,8 @@ public class NastyWolfEntity extends WolfEntity // MonsterEntity
 	public static void onInfect(WolfEntity mob)
 	{
 		World world = mob.world;
-		Vec3d mobpos = mob.getPositionVec();
-		if (mob.onGround)
+		Vector3d mobpos = mob.getPositionVec();
+		if (mob.func_233570_aj_()) // onGround
 			mob.setMotion(0, 0, 0);
 
 		NastyWolfEntity newmob = ModEntities.NASTY_WOLF.create(world);
@@ -172,7 +173,7 @@ public class NastyWolfEntity extends WolfEntity // MonsterEntity
 		newmob.setMotion(mob.getMotion());
 
 		// SoundEvents.ENTITY_ZOMBIE_VILLAGER_CONVERTED
-	    world.playEvent((PlayerEntity)null, 1027, new BlockPos(newmob), 0);
+	    world.playEvent((PlayerEntity)null, 1027, newmob.func_233580_cy_(), 0);
 		world.addEntity(newmob);
 		mob.remove();
 	}
@@ -188,11 +189,11 @@ public class NastyWolfEntity extends WolfEntity // MonsterEntity
 
 		@Override
 		protected void checkAndPerformAttack(LivingEntity enemy, double distToEnemySqr) {
-			if (this.attackTick > 0)
+			if (func_234041_j_() > 0) // get attackTick
 				return;
 			double d0 = this.getAttackReachSqr(enemy);
 			if (distToEnemySqr <= d0) {
-				this.attackTick = 20;
+				func_234039_g_(); // reset attackTick
 				this.attacker.swingArm(Hand.MAIN_HAND);
 				this.attacker.attackEntityAsMob(enemy);
 			}

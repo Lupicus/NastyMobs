@@ -13,7 +13,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
-import net.minecraft.fluid.IFluidState;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.inventory.EquipmentSlotType.Group;
 import net.minecraft.item.ItemStack;
@@ -24,10 +24,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.Explosion.Mode;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IExplosionContext;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 
@@ -46,9 +47,9 @@ public class ExplosiveArrowEntity extends ArrowEntity
 	}
 
 	@Override
-	protected void onHit(RayTraceResult raytraceResultIn)
+	protected void onImpact(RayTraceResult raytraceResultIn)
 	{
-		super.onHit(raytraceResultIn);
+		super.onImpact(raytraceResultIn);
 		if (raytraceResultIn.getType() == RayTraceResult.Type.BLOCK)
 		{
 			BlockRayTraceResult result = (BlockRayTraceResult) raytraceResultIn;
@@ -72,9 +73,7 @@ public class ExplosiveArrowEntity extends ArrowEntity
 		if (!(world instanceof ServerWorld))
 			return null;
 		ServerWorld world = (ServerWorld) this.world;
-		SimpleExplosion e = new SimpleExplosion(world, this, x, y, z, r, false, mode);
-		if (source != null)
-			e.setDamageSource(source);
+		SimpleExplosion e = new SimpleExplosion(world, this, source, null, x, y, z, r, false, mode);
 
 		if (net.minecraftforge.event.ForgeEventFactory.onExplosionStart(world, e))
 			return e;
@@ -118,7 +117,7 @@ public class ExplosiveArrowEntity extends ArrowEntity
 			le = (LivingEntity) entity;
 			if (MyConfig.explosiveArrowOnShield)
 			{
-				Entity se = getShooter();
+				Entity se = func_234616_v_(); // getShooter
 				if (se == null)
 					se = this;
 				blocking = canBlockDamageSource(le, se);
@@ -137,7 +136,7 @@ public class ExplosiveArrowEntity extends ArrowEntity
 			if (!stack.isEmpty()) {
 				double d0 = (double) (rand.nextFloat() * 0.5F) + 0.25D;
 				double d2 = (double) (rand.nextFloat() * 0.5F) + 0.25D;
-				BlockPos pos = le.getPosition();
+				BlockPos pos = le.func_233580_cy_(); // getPosition
 				ItemEntity itementity = new ItemEntity(le.world, pos.getX() + d0, pos.getY(), pos.getZ() + d2, stack);
 				itementity.setDefaultPickupDelay();
 				if (le.world.addEntity(itementity))
@@ -157,10 +156,10 @@ public class ExplosiveArrowEntity extends ArrowEntity
 	private boolean canBlockDamageSource(LivingEntity target, Entity source)
 	{
 		if (target.isActiveItemStackBlocking() && !(getPierceLevel() > 0)) {
-			Vec3d vec3d2 = source.getPositionVec();
-			Vec3d vec3d = target.getLook(1.0F);
-			Vec3d vec3d1 = vec3d2.subtractReverse(target.getPositionVec()).normalize();
-			vec3d1 = new Vec3d(vec3d1.x, 0.0D, vec3d1.z);
+			Vector3d vec3d2 = source.getPositionVec();
+			Vector3d vec3d = target.getLook(1.0F);
+			Vector3d vec3d1 = vec3d2.subtractReverse(target.getPositionVec()).normalize();
+			vec3d1 = new Vector3d(vec3d1.x, 0.0D, vec3d1.z);
 			if (vec3d1.dotProduct(vec3d) < 0.0D) {
 				return true;
 			}
@@ -171,7 +170,7 @@ public class ExplosiveArrowEntity extends ArrowEntity
 
 	@Override
 	public float getExplosionResistance(Explosion explosionIn, IBlockReader worldIn, BlockPos pos,
-			BlockState blockStateIn, IFluidState ifluidstateIn, float f2) {
+			BlockState blockStateIn, FluidState ifluidstateIn, float f2) {
 		return f2 / MyConfig.explosiveArrowStrength;
 	}
 
@@ -183,9 +182,9 @@ public class ExplosiveArrowEntity extends ArrowEntity
 		private World world;
 		private Entity exploder;
 
-		public SimpleExplosion(World worldIn, Entity exploderIn, double xIn, double yIn, double zIn, float sizeIn,
+		public SimpleExplosion(World worldIn, Entity exploderIn, @Nullable DamageSource dmgsrc, @Nullable IExplosionContext ctx, double xIn, double yIn, double zIn, float sizeIn,
 				boolean causesFireIn, Mode modeIn) {
-			super(worldIn, exploderIn, xIn, yIn, zIn, sizeIn, causesFireIn, modeIn);
+			super(worldIn, exploderIn, dmgsrc, ctx, xIn, yIn, zIn, sizeIn, causesFireIn, modeIn);
 			world = worldIn;
 			x = xIn;
 			y = yIn;
@@ -199,13 +198,13 @@ public class ExplosiveArrowEntity extends ArrowEntity
 			List<BlockPos> list = getAffectedBlockPositions();
 			BlockPos blockpos = new BlockPos(x, y, z);
 			BlockState blockstate = world.getBlockState(blockpos);
-			IFluidState ifluidstate = world.getFluidState(blockpos);
-			if (!blockstate.isAir(world, blockpos) || !ifluidstate.isEmpty())
+			FluidState fluidstate = world.getFluidState(blockpos);
+			if (!blockstate.isAir(world, blockpos) || !fluidstate.isEmpty())
 			{
-				float f2 = Math.max(blockstate.getExplosionResistance(world, blockpos, exploder, this),
-									ifluidstate.getExplosionResistance(world, blockpos, exploder, this));
+				float f2 = Math.max(blockstate.getExplosionResistance(world, blockpos, this),
+									fluidstate.getExplosionResistance(world, blockpos, this));
 				if (exploder != null)
-					f2 = exploder.getExplosionResistance(this, world, blockpos, blockstate, ifluidstate, f2);
+					f2 = exploder.getExplosionResistance(this, world, blockpos, blockstate, fluidstate, f2);
 
 				if (f2 < 1.0F && (exploder == null
 						|| exploder.canExplosionDestroyBlock(this, world, blockpos, blockstate, f2)))

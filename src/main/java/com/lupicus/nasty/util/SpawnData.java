@@ -17,6 +17,8 @@ public class SpawnData
     	for (Biome b : ForgeRegistries.BIOMES)
     	{
     		List<SpawnListEntry> list = b.getSpawns(type);
+    		if (list == null)
+    			continue;
     		if (list.stream().anyMatch(e -> oldMob.equals(e.entityType)))
     		{
     			list.add(new SpawnListEntry(newMob, weight, min, max));
@@ -29,6 +31,8 @@ public class SpawnData
     	for (Structure<?> f : ForgeRegistries.STRUCTURE_FEATURES)
     	{
     		List<SpawnListEntry> list = f.getSpawnList();
+    		if (list == null)
+    			continue;
     		if (list.stream().anyMatch(e -> oldMob.equals(e.entityType)))
     		{
     			list.add(new SpawnListEntry(newMob, weight, min, max));
@@ -42,6 +46,8 @@ public class SpawnData
     	for (Biome b : ForgeRegistries.BIOMES)
     	{
     		List<SpawnListEntry> list = b.getSpawns(type);
+    		if (list == null)
+    			continue;
     		for (int i = 0; i < list.size(); ++i)
     		{
     			if (mob.equals(list.get(i).entityType))
@@ -58,6 +64,8 @@ public class SpawnData
     	for (Structure<?> f : ForgeRegistries.STRUCTURE_FEATURES)
     	{
     		List<SpawnListEntry> list = f.getSpawnList();
+    		if (list == null)
+    			continue;
     		for (int i = 0; i < list.size(); ++i)
     		{
     			if (mob.equals(list.get(i).entityType))

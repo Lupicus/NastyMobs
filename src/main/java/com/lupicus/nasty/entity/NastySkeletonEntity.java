@@ -244,8 +244,15 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 		// calculate new health using horizontal distance (i.e. ignore Y)
 		IWorldInfo winfo = worldIn.getWorldInfo();
 		BlockPos spos = new BlockPos(winfo.getSpawnX(), winfo.getSpawnY(), winfo.getSpawnZ());
-		double dx = (double) pos.getX() - (double) spos.getX();
-		double dz = (double) pos.getZ() - (double) spos.getZ();
+		double x0 = (double) spos.getX();
+		double z0 = (double) spos.getZ();
+		if (worldIn.func_230315_m_().func_236045_g_())
+		{
+			x0 /= 8.0;
+			z0 /= 8.0;
+		}
+		double dx = (double) pos.getX() - x0;
+		double dz = (double) pos.getZ() - z0;
 		double d2 = dx * dx + dz * dz;
 		double temp;
 		if (d2 >= MyConfig.maxDistanceSq)
@@ -454,7 +461,10 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 			return;
 		double velocity = 1.6;
 		d1 = ArrowHelper.computeY(d3, d1, velocity, abstractarrowentity.getPosY(), target.getPosY(), target.getHeight());
-		abstractarrowentity.shoot(d0, d1, d2, (float) velocity, 0.0F);
+		float inaccuracy = 0.0F;
+		if (rand.nextDouble() < MyConfig.addInaccuracy)
+			inaccuracy = (float) (14 - world.getDifficulty().getId() * 4);
+		abstractarrowentity.shoot(d0, d1, d2, (float) velocity, inaccuracy);
 		this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0F, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
 		this.world.addEntity(abstractarrowentity);
 	}
@@ -470,16 +480,18 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 	protected void enchantArrow(AbstractArrowEntity entity)
 	{
 		// innate power and knockback
-		int i = 5;
+		int i;
 		int j = 1;
 		if (world.getDifficulty() == Difficulty.HARD)
 		{
-			i += 4;
 			j += 1;
+			i = MyConfig.bonusHardPower;
 		}
+		else
+			i = MyConfig.bonusPower;
 
 		if (i > 0)
-			entity.setDamage(entity.getDamage() + (double) i * 0.5D + 0.5D);
+			entity.setDamage(entity.getDamage() + (double) (i + 1) * 0.5D);
 
 		if (j > 0)
 			entity.setKnockbackStrength(j);

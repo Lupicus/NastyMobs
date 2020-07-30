@@ -37,6 +37,7 @@ public class MyConfig
 	public static double minDistanceSq;
 	public static double maxDistanceSq;
 	public static double arrowDamageMultiplier;
+	public static double addInaccuracy;
 	public static boolean explosiveArrowOnArmor;
 	public static boolean explosiveArrowOnBlock;
 	public static boolean explosiveArrowOnShield;
@@ -44,6 +45,8 @@ public class MyConfig
 	public static float virusDistance;
 	public static float virusChance;
 	public static float virusChance2;
+	public static int bonusPower;
+	public static int bonusHardPower;
 	public static int spawnBiome;
 	public static int spawnFeature;
 	public static int spawnDungeon;
@@ -73,6 +76,9 @@ public class MyConfig
 		maxDistance = SERVER.maxDistance.get();
 		maxDistanceSq = maxDistance * maxDistance;
 		arrowDamageMultiplier = SERVER.arrowDamageMultiplier.get();
+		addInaccuracy = SERVER.addInaccuracy.get();
+		bonusPower = SERVER.bonusPower.get();
+		bonusHardPower = SERVER.bonusHardPower.get();
 		spawnBiome = SERVER.spawnBiome.get();
 		spawnFeature = SERVER.spawnFeature.get();
 		spawnDungeon = SERVER.spawnDungeon.get();
@@ -153,6 +159,7 @@ public class MyConfig
 		public final DoubleValue minDistance;
 		public final DoubleValue maxDistance;
 		public final DoubleValue arrowDamageMultiplier;
+		public final DoubleValue addInaccuracy;
 		public final BooleanValue explosiveArrowOnArmor;
 		public final BooleanValue explosiveArrowOnBlock;
 		public final BooleanValue explosiveArrowOnShield;
@@ -160,6 +167,8 @@ public class MyConfig
 		public final DoubleValue virusDistance;
 		public final DoubleValue virusChance;
 		public final DoubleValue virusChance2;
+		public final IntValue bonusPower;
+		public final IntValue bonusHardPower;
 		public final IntValue spawnBiome;
 		public final IntValue spawnFeature;
 		public final IntValue spawnDungeon;
@@ -182,7 +191,7 @@ public class MyConfig
 			maxHealth = builder
 					.comment("Maximum health")
 					.translation(sectionTrans + "max_health")
-					.defineInRange("MaxHealth", () -> 250.0, 100.0, 5000.0);
+					.defineInRange("MaxHealth", () -> 46.0, 20.0, 5000.0);
 			minDistance = builder
 					.comment("Minimum Distance")
 					.translation(sectionTrans + "min_distance")
@@ -190,7 +199,15 @@ public class MyConfig
 			maxDistance = builder
 					.comment("Maximum Distance")
 					.translation(sectionTrans + "max_distance")
-					.defineInRange("MaxDistance", () -> 4000.0, 0.0, 1280000.0);
+					.defineInRange("MaxDistance", () -> 22500.0, 0.0, 1280000.0);
+			bonusPower = builder
+					.comment("Bonus Power")
+					.translation(sectionTrans + "bonus_power")
+					.defineInRange("BonusPower", 3, 0, 10);
+			bonusHardPower = builder
+					.comment("Bonus Power for Hard")
+					.translation(sectionTrans + "bonus_hard_power")
+					.defineInRange("BonusHardPower", 7, 0, 20);
 			spawnBiome = builder
 					.comment("Spawn in Biome weight")
 					.translation(sectionTrans + "spawn_biome")
@@ -211,6 +228,10 @@ public class MyConfig
 					.comment("Arrow Damage Multiplier (damage to skeleton)")
 					.translation(sectionTrans + "arrow_damage_multiplier")
 					.defineInRange("ArrowDamageMultiplier", () -> 0.5, 0.0, 1.0);
+			addInaccuracy = builder
+					.comment("Add inaccuracy to shot")
+					.translation(sectionTrans + "add_inaccuracy")
+					.defineInRange("AddInaccuracy", () -> 0.7, 0.0, 1.0);
 			explosiveArrowOnArmor = builder
 					.comment("Explosive Arrow cause Armor to drop")
 					.translation(sectionTrans + "explosive_arrow_armor")

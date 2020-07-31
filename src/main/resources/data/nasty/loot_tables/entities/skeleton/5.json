@@ -14,6 +14,25 @@
       "rolls": 1,
       "entries": [
         {
+          "weight": 15,
+          "type": "minecraft:loot_table",
+          "name": "nasty:entities/skeleton2"
+        },
+        {
+          "weight": 15,
+          "type": "minecraft:item",
+          "name": "minecraft:pufferfish"
+        },
+        {
+          "weight": 70,
+          "type": "minecraft:empty"
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
           "type": "minecraft:loot_table",
           "name": "nasty:entities/skeleton"
         }

@@ -1,0 +1,98 @@
+{
+  "parent": "nasty:adventure/kill_a_mob",
+  "display": {
+    "icon": {
+      "item": "minecraft:diamond_sword",
+      "nbt": "{Damage:0}"
+    },
+    "title": {
+      "translate": "advancements.adventure.nasty.kill_all_mobs.title"
+    },
+    "description": {
+      "translate": "advancements.adventure.nasty.kill_all_mobs.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "rewards": {
+    "experience": 100
+  },
+  "criteria": {
+    "skeleton_0": {
+      "trigger": "minecraft:player_killed_entity",
+      "conditions": {
+        "entity": {
+          "type": "nasty:skeleton",
+          "nbt": "{SubType:0b}"
+        }
+      }
+    },
+    "skeleton_1": {
+      "trigger": "minecraft:player_killed_entity",
+      "conditions": {
+        "entity": {
+          "type": "nasty:skeleton",
+          "nbt": "{SubType:1b}"
+        }
+      }
+    },
+    "skeleton_2": {
+      "trigger": "minecraft:player_killed_entity",
+      "conditions": {
+        "entity": {
+          "type": "nasty:skeleton",
+          "nbt": "{SubType:2b}"
+        }
+      }
+    },
+    "skeleton_3": {
+      "trigger": "minecraft:player_killed_entity",
+      "conditions": {
+        "entity": {
+          "type": "nasty:skeleton",
+          "nbt": "{SubType:3b}"
+        }
+      }
+    },
+    "skeleton_4": {
+      "trigger": "minecraft:player_killed_entity",
+      "conditions": {
+        "entity": {
+          "type": "nasty:skeleton",
+          "nbt": "{SubType:4b}"
+        }
+      }
+    },
+    "skeleton_5": {
+      "trigger": "minecraft:player_killed_entity",
+      "conditions": {
+        "entity": {
+          "type": "nasty:skeleton",
+          "nbt": "{SubType:5b}"
+        }
+      }
+    }
+  },
+  "requirements": [
+    [
+      "skeleton_0"
+    ],
+    [
+      "skeleton_1"
+    ],
+    [
+      "skeleton_2"
+    ],
+    [
+      "skeleton_3"
+    ],
+    [
+      "skeleton_4"
+    ],
+    [
+      "skeleton_5"
+    ]
+  ]
+}

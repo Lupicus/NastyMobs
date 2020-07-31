@@ -49,8 +49,6 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.pathfinding.PathNavigator;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.Potions;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
@@ -498,9 +496,17 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 
 		// set custom enchantment based on subtype
 		int subtype = getSubType();
-		if (subtype == 1)
+		if (subtype == 0)
+		{
+			((ArrowEntity) entity).addEffect(new EffectInstance(Effects.POISON, 160));
+		}
+		else if (subtype == 1)
 		{
 			entity.setFire(100);
+		}
+		else if (subtype == 2)
+		{
+			((ArrowEntity) entity).addEffect(new EffectInstance(Effects.INSTANT_DAMAGE, 1));
 		}
 		else if (subtype == 3)
 		{
@@ -509,18 +515,6 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 		else if (subtype == 5)
 		{
 			((ArrowEntity) entity).addEffect(new EffectInstance(Effects.NAUSEA, 140, 1));
-		}
-		else if (subtype != 4)
-		{
-			Potion p;
-			if (subtype == 0)
-				p = Potions.POISON;
-			else // subtype == 2
-				p = Potions.HARMING;
-			for (EffectInstance e : p.getEffects())
-			{
-				((ArrowEntity) entity).addEffect(new EffectInstance(e));
-			}
 		}
 	}
 

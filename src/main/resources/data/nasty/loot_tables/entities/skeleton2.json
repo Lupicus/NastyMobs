@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "weight": 10,
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{Potion:\"minecraft:leaping\"}"
+            }
+          ],
+          "name": "minecraft:potion"
+        },
+        {
+          "weight": 10,
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{Potion:\"minecraft:swiftness\"}"
+            }
+          ],
+          "name": "minecraft:potion"
+        }
+      ]
+    }
+  ]
+}

@@ -21,13 +21,13 @@ import net.minecraftforge.fml.config.ModConfig;
 public class MyConfig
 {
 	private static final Logger LOGGER = LogManager.getLogger();
-	public static final Server SERVER;
-	public static final ForgeConfigSpec SERVER_SPEC;
+	public static final Common COMMON;
+	public static final ForgeConfigSpec COMMON_SPEC;
 	static
 	{
-		final Pair<Server, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(Server::new);
-		SERVER_SPEC = specPair.getRight();
-		SERVER = specPair.getLeft();
+		final Pair<Common, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(Common::new);
+		COMMON_SPEC = specPair.getRight();
+		COMMON = specPair.getLeft();
 	}
 
 	public static double minHealth;
@@ -41,12 +41,16 @@ public class MyConfig
 	public static boolean explosiveArrowOnArmor;
 	public static boolean explosiveArrowOnBlock;
 	public static boolean explosiveArrowOnShield;
+	public static boolean useBlindness;
 	public static float explosiveArrowStrength;
 	public static float virusDistance;
 	public static float virusChance;
 	public static float virusChance2;
 	public static int bonusPower;
 	public static int bonusHardPower;
+	public static int magicDamage;
+	public static int poisonTime;
+	public static int yellowTime;
 	public static int spawnBiome;
 	public static int spawnFeature;
 	public static int spawnDungeon;
@@ -59,7 +63,7 @@ public class MyConfig
 	@SubscribeEvent
 	public static void onModConfigEvent(final ModConfig.ModConfigEvent configEvent)
 	{
-		if (configEvent.getConfig().getSpec() == MyConfig.SERVER_SPEC)
+		if (configEvent.getConfig().getSpec() == MyConfig.COMMON_SPEC)
 		{
 			bakeConfig();
 		}
@@ -67,33 +71,37 @@ public class MyConfig
 
 	public static void bakeConfig()
 	{
-		check(SERVER.minHealth, SERVER.maxHealth);
-		minHealth = SERVER.minHealth.get();
-		maxHealth = SERVER.maxHealth.get();
-		check(SERVER.minDistance, SERVER.maxDistance);
-		minDistance = SERVER.minDistance.get();
+		check(COMMON.minHealth, COMMON.maxHealth);
+		minHealth = COMMON.minHealth.get();
+		maxHealth = COMMON.maxHealth.get();
+		check(COMMON.minDistance, COMMON.maxDistance);
+		minDistance = COMMON.minDistance.get();
 		minDistanceSq = minDistance * minDistance;
-		maxDistance = SERVER.maxDistance.get();
+		maxDistance = COMMON.maxDistance.get();
 		maxDistanceSq = maxDistance * maxDistance;
-		arrowDamageMultiplier = SERVER.arrowDamageMultiplier.get();
-		addInaccuracy = SERVER.addInaccuracy.get();
-		bonusPower = SERVER.bonusPower.get();
-		bonusHardPower = SERVER.bonusHardPower.get();
-		spawnBiome = SERVER.spawnBiome.get();
-		spawnFeature = SERVER.spawnFeature.get();
-		spawnDungeon = SERVER.spawnDungeon.get();
-		spawnLightLevel = SERVER.spawnLightLevel.get();
-		explosiveArrowOnArmor = SERVER.explosiveArrowOnArmor.get();
-		explosiveArrowOnBlock = SERVER.explosiveArrowOnBlock.get();
-		explosiveArrowOnShield = SERVER.explosiveArrowOnShield.get();
-		explosiveArrowStrength = (float) SERVER.explosiveArrowStrength.get().doubleValue();
-		virusDistance = (float) SERVER.virusDistance.get().doubleValue();
-		virusChance = (float) SERVER.virusChance.get().doubleValue();
-		virusChance2 = (float) SERVER.virusChance2.get().doubleValue();
-		spawnTempBased = SERVER.spawnTempBased.get();
-		spawnVariantWeights = extract(NastySkeletonEntity.NVARIANTS, SERVER.spawnVariantWeights.get());
-		biomeAdjustments = extract(SERVER.biomeAdjustments.get());
-		virusMode2 = SERVER.virusMode2.get();
+		arrowDamageMultiplier = COMMON.arrowDamageMultiplier.get();
+		addInaccuracy = COMMON.addInaccuracy.get();
+		bonusPower = COMMON.bonusPower.get();
+		bonusHardPower = COMMON.bonusHardPower.get();
+		magicDamage = COMMON.magicDamage.get();
+		poisonTime = COMMON.poisonTime.get() * 20;
+		yellowTime = COMMON.yellowTime.get() * 20;
+		spawnBiome = COMMON.spawnBiome.get();
+		spawnFeature = COMMON.spawnFeature.get();
+		spawnDungeon = COMMON.spawnDungeon.get();
+		spawnLightLevel = COMMON.spawnLightLevel.get();
+		explosiveArrowOnArmor = COMMON.explosiveArrowOnArmor.get();
+		explosiveArrowOnBlock = COMMON.explosiveArrowOnBlock.get();
+		explosiveArrowOnShield = COMMON.explosiveArrowOnShield.get();
+		useBlindness = COMMON.useBlindness.get();
+		explosiveArrowStrength = (float) COMMON.explosiveArrowStrength.get().doubleValue();
+		virusDistance = (float) COMMON.virusDistance.get().doubleValue();
+		virusChance = (float) COMMON.virusChance.get().doubleValue();
+		virusChance2 = (float) COMMON.virusChance2.get().doubleValue();
+		spawnTempBased = COMMON.spawnTempBased.get();
+		spawnVariantWeights = extract(NastySkeletonEntity.NVARIANTS, COMMON.spawnVariantWeights.get());
+		biomeAdjustments = extract(COMMON.biomeAdjustments.get());
+		virusMode2 = COMMON.virusMode2.get();
 		NastySkeletonEntity.configUpdate();
 	}
 
@@ -152,7 +160,7 @@ public class MyConfig
 		return ret;
 	}
 
-	public static class Server
+	public static class Common
 	{
 		public final DoubleValue minHealth;
 		public final DoubleValue maxHealth;
@@ -163,12 +171,16 @@ public class MyConfig
 		public final BooleanValue explosiveArrowOnArmor;
 		public final BooleanValue explosiveArrowOnBlock;
 		public final BooleanValue explosiveArrowOnShield;
+		public final BooleanValue useBlindness;
 		public final DoubleValue explosiveArrowStrength;
 		public final DoubleValue virusDistance;
 		public final DoubleValue virusChance;
 		public final DoubleValue virusChance2;
 		public final IntValue bonusPower;
 		public final IntValue bonusHardPower;
+		public final IntValue magicDamage;
+		public final IntValue poisonTime;
+		public final IntValue yellowTime;
 		public final IntValue spawnBiome;
 		public final IntValue spawnFeature;
 		public final IntValue spawnDungeon;
@@ -178,7 +190,7 @@ public class MyConfig
 		public final ConfigValue<String> biomeAdjustments;
 		public final EnumValue<VMode> virusMode2;
 
-		public Server(ForgeConfigSpec.Builder builder)
+		public Common(ForgeConfigSpec.Builder builder)
 		{
 			String baseTrans = Main.MODID + ".config.";
 			String sectionTrans;
@@ -208,6 +220,18 @@ public class MyConfig
 					.comment("Bonus Power for Hard")
 					.translation(sectionTrans + "bonus_hard_power")
 					.defineInRange("BonusHardPower", 7, 0, 20);
+			magicDamage = builder
+					.comment("Magic Damage for arrow used by purple skeleton")
+					.translation(sectionTrans + "magic_damage")
+					.defineInRange("MagicDamage", 3, 0, 50);
+			poisonTime = builder
+					.comment("Poison Time")
+					.translation(sectionTrans + "poison_time")
+					.defineInRange("PoisonTime", 9, 1, 30);
+			yellowTime = builder
+					.comment("Yellow skeleton effect Time")
+					.translation(sectionTrans + "yellow_time")
+					.defineInRange("YellowTime", 7, 1, 30);
 			spawnBiome = builder
 					.comment("Spawn in Biome weight")
 					.translation(sectionTrans + "spawn_biome")
@@ -244,6 +268,10 @@ public class MyConfig
 					.comment("Explosive Arrow cause Shield to drop")
 					.translation(sectionTrans + "explosive_arrow_shield")
 					.define("ExplosiveArrowOnShield", false);
+			useBlindness = builder
+					.comment("Use blindness instead of nausea for the yellow skeleton")
+					.translation(sectionTrans + "use_blindness")
+					.define("UseBlindness", false);
 			explosiveArrowStrength = builder
 					.comment("Explosive Arrow strength")
 					.translation(sectionTrans + "explosive_arrow_strength")

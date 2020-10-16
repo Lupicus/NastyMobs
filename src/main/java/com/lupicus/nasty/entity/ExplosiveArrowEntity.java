@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import com.lupicus.nasty.config.MyConfig;
+import com.lupicus.nasty.sound.ModSounds;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -141,7 +142,10 @@ public class ExplosiveArrowEntity extends ArrowEntity
 				ItemEntity itementity = new ItemEntity(le.world, pos.getX() + d0, pos.getY(), pos.getZ() + d2, stack);
 				itementity.setDefaultPickupDelay();
 				if (le.world.addEntity(itementity))
+				{
+					le.world.playSound(null, le.getPosX(), le.getPosY(), le.getPosZ(), ModSounds.ARMOR_DROP, le.getSoundCategory(), 1.0F, 1.0F);
 					le.setItemStackToSlot(slot, ItemStack.EMPTY);
+				}
 			}
 			if (isAlive())
 				remove();

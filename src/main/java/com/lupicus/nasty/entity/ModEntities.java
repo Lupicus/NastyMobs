@@ -20,8 +20,8 @@ import net.minecraftforge.registries.IForgeRegistry;
 
 public class ModEntities
 {
-	public static final EntityType<NastySkeletonEntity> NASTY_SKELETON = register("skeleton", EntityType.Builder.create(NastySkeletonEntity::new, EntityClassification.MONSTER).size(0.6F, 1.99F));
-	public static final EntityType<NastyWolfEntity> NASTY_WOLF = register("wolf", EntityType.Builder.create(NastyWolfEntity::new, EntityClassification.MONSTER).size(0.6F, 0.85F));
+	public static final EntityType<NastySkeletonEntity> NASTY_SKELETON = register("skeleton", EntityType.Builder.create(NastySkeletonEntity::new, EntityClassification.MONSTER).size(0.6F, 1.99F).func_233606_a_(8));
+	public static final EntityType<NastyWolfEntity> NASTY_WOLF = register("wolf", EntityType.Builder.create(NastyWolfEntity::new, EntityClassification.MONSTER).size(0.6F, 0.85F).func_233606_a_(8));
 
 	private static <T extends Entity> EntityType<T> register(String name, EntityType.Builder<T> builder)
 	{

@@ -3,10 +3,12 @@ package com.lupicus.nasty;
 import com.lupicus.nasty.config.MyConfig;
 import com.lupicus.nasty.entity.ModEntities;
 import com.lupicus.nasty.item.ModItems;
+import com.lupicus.nasty.sound.ModSounds;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
+import net.minecraft.util.SoundEvent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ColorHandlerEvent;
@@ -31,7 +33,7 @@ public class Main
     public Main()
     {
 		FMLJavaModLoadingContext.get().getModEventBus().register(this);
-		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, MyConfig.SERVER_SPEC);
+		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, MyConfig.COMMON_SPEC);
     }
 
     @SubscribeEvent
@@ -72,6 +74,12 @@ public class Main
         public static void onEntityRegistry(final RegistryEvent.Register<EntityType<?>> event)
         {
         	ModEntities.register(event.getRegistry());
+        }
+
+        @SubscribeEvent
+        public static void onSoundRegistry(final RegistryEvent.Register<SoundEvent> event)
+        {
+        	ModSounds.register(event.getRegistry());
         }
     }
 

@@ -48,6 +48,7 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.pathfinding.PathNavigator;
+import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
@@ -470,7 +471,10 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 	@Override
 	public ItemStack findAmmo(ItemStack shootable)
 	{
-		if (getSubType() == 4)
+		int subtype = getSubType();
+		if (subtype == 2)
+			return new ItemStack(ModItems.MAGIC_ARROW);
+		if (subtype == 4)
 			return new ItemStack(ModItems.EXPLOSIVE_ARROW);
 		return super.findAmmo(shootable);
 	}
@@ -498,23 +502,24 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 		int subtype = getSubType();
 		if (subtype == 0)
 		{
-			((ArrowEntity) entity).addEffect(new EffectInstance(Effects.POISON, 160));
+			((ArrowEntity) entity).addEffect(new EffectInstance(Effects.POISON, MyConfig.poisonTime));
 		}
 		else if (subtype == 1)
 		{
 			entity.setFire(100);
 		}
-		else if (subtype == 2)
-		{
-			((ArrowEntity) entity).addEffect(new EffectInstance(Effects.INSTANT_DAMAGE, 1));
-		}
+//		else if (subtype == 2)
+//		{
+//			((ArrowEntity) entity).addEffect(new EffectInstance(Effects.INSTANT_DAMAGE, 1));
+//		}
 		else if (subtype == 3)
 		{
 			((ArrowEntity) entity).addEffect(new EffectInstance(Effects.LEVITATION, 140));
 		}
 		else if (subtype == 5)
 		{
-			((ArrowEntity) entity).addEffect(new EffectInstance(Effects.NAUSEA, 140, 1));
+			Effect effect = MyConfig.useBlindness ? Effects.BLINDNESS : Effects.NAUSEA;
+			((ArrowEntity) entity).addEffect(new EffectInstance(effect, MyConfig.yellowTime, 1));
 		}
 	}
 
@@ -583,7 +588,9 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 			{
 				EquipmentSlotType slot = copyList[i];
 				stack = from.getItemStackFromSlot(slot);
-				newmob.setItemStackToSlot(slot, stack);
+				newmob.setItemStackToSlot(slot, stack.copy());
+				newmob.setDropChance(slot, getDropChance(slot));
+				stack.setCount(0);
 			}
 			if (from.isNoDespawnRequired())
 				newmob.enablePersistence();

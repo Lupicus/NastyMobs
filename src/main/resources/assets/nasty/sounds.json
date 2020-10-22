@@ -1,0 +1,12 @@
+{
+  "item.armor.drop": {
+    "subtitle": "subtitles.nasty.item.armor.drop",
+    "sounds": [
+      {
+        "name": "block/beehive/exit",
+        "pitch": 0.6,
+        "volume": 1.2
+      }
+    ]
+  }
+}

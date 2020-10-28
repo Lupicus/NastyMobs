@@ -28,8 +28,8 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.Explosion.Mode;
+import net.minecraft.world.ExplosionContext;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IExplosionContext;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 
@@ -186,7 +186,7 @@ public class ExplosiveArrowEntity extends ArrowEntity
 		private World world;
 		private Entity exploder;
 
-		public SimpleExplosion(World worldIn, Entity exploderIn, @Nullable DamageSource dmgsrc, @Nullable IExplosionContext ctx, double xIn, double yIn, double zIn, float sizeIn,
+		public SimpleExplosion(World worldIn, Entity exploderIn, @Nullable DamageSource dmgsrc, @Nullable ExplosionContext ctx, double xIn, double yIn, double zIn, float sizeIn,
 				boolean causesFireIn, Mode modeIn) {
 			super(worldIn, exploderIn, dmgsrc, ctx, xIn, yIn, zIn, sizeIn, causesFireIn, modeIn);
 			world = worldIn;
@@ -196,6 +196,7 @@ public class ExplosiveArrowEntity extends ArrowEntity
 			exploder = exploderIn;
 		}
 
+		@SuppressWarnings("deprecation")
 		@Override
 		public void doExplosionA()
 		{

@@ -1,9 +1,10 @@
 package com.lupicus.nasty.entity;
 
+import java.util.List;
+
 import com.lupicus.nasty.Main;
 import com.lupicus.nasty.config.MyConfig;
 import com.lupicus.nasty.renderer.entity.NastySkeletonRenderer;
-import com.lupicus.nasty.util.SpawnData;
 import com.lupicus.nasty.renderer.entity.NastyWolfRenderer;
 
 import net.minecraft.client.renderer.entity.EntityRendererManager;
@@ -12,6 +13,7 @@ import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.attributes.GlobalEntityTypeAttributes;
+import net.minecraft.world.biome.MobSpawnInfo.Spawners;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -50,21 +52,33 @@ public class ModEntities
 
 	public static void addSpawnData()
 	{
-		int val = MyConfig.spawnBiome;
-		if (val > 0)
-			SpawnData.copyBiomeSpawn(EntityType.SKELETON, NASTY_SKELETON, val, 1, 3);
-		val = MyConfig.spawnFeature;
-		if (val > 0)
-			SpawnData.copyFeatureSpawn(EntityType.SKELETON, NASTY_SKELETON, val, 3, 4);
-		val = MyConfig.spawnDungeon;
+		int val = MyConfig.spawnDungeon;
 		if (val > 0)
 			DungeonHooks.addDungeonMob(NASTY_SKELETON, val);
 	}
 
 	public static void removeSpawnData()
 	{
-		SpawnData.removeBiomeSpawn(NASTY_SKELETON);
-		SpawnData.removeFeatureSpawn(NASTY_SKELETON);
 		DungeonHooks.removeDungeonMob(NASTY_SKELETON);
+	}
+
+	public static void getBiomeSpawnData(List<EntityType<?>> mobs, List<Spawners> spawns)
+	{
+		int val = MyConfig.spawnBiome;
+		if (val > 0)
+		{
+			mobs.add(EntityType.SKELETON);
+			spawns.add(new Spawners(NASTY_SKELETON, val, 1, 3));
+		}
+	}
+
+	public static void getFeatureSpawnData(List<EntityType<?>> mobs, List<Spawners> spawns)
+	{
+		int val = MyConfig.spawnFeature;
+		if (val > 0)
+		{
+			mobs.add(EntityType.SKELETON);
+			spawns.add(new Spawners(NASTY_SKELETON, val, 3, 4));
+		}
 	}
 }

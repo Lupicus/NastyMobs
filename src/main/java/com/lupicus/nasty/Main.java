@@ -4,6 +4,7 @@ import com.lupicus.nasty.config.MyConfig;
 import com.lupicus.nasty.entity.ModEntities;
 import com.lupicus.nasty.item.ModItems;
 import com.lupicus.nasty.sound.ModSounds;
+import com.lupicus.nasty.util.SpawnData;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityType;
@@ -12,6 +13,7 @@ import net.minecraft.util.SoundEvent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -34,6 +36,7 @@ public class Main
     {
 		FMLJavaModLoadingContext.get().getModEventBus().register(this);
 		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, MyConfig.COMMON_SPEC);
+		MinecraftForge.EVENT_BUS.register(SpawnData.class);
     }
 
     @SubscribeEvent

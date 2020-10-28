@@ -170,52 +170,36 @@ public class JumpNodeProcessor extends WalkNodeProcessor
 				}
 
 				if (pathnodetype == PathNodeType.OPEN) {
-					AxisAlignedBB axisalignedbb1 = new AxisAlignedBB((double) x - d1 + 0.5D, (double) y + 0.001D,
-							(double) z - d1 + 0.5D, (double) x + d1 + 0.5D,
-							(double) ((float) y + this.entity.getHeight()), (double) z + d1 + 0.5D);
-					if (this.func_237236_a_(axisalignedbb1)) {
-						return null;
-					}
-
-					if (this.entity.getWidth() >= 1.0F) {
-						PathNodeType pathnodetype1 = this.func_237230_a_(this.entity, x, y - 1, z);
-						if (pathnodetype1 == PathNodeType.BLOCKED) {
-							pathpoint = this.openPoint(x, y, z);
-							pathpoint.nodeType = PathNodeType.WALKABLE;
-							pathpoint.costMalus = Math.max(pathpoint.costMalus, f);
-							return pathpoint;
-						}
-					}
-
-					int i = 0;
-					int j = y;
+					int j = 0;
+					int i = y;
 
 					while (pathnodetype == PathNodeType.OPEN) {
 						--y;
 						if (y < 0) {
-							PathPoint pathpoint2 = this.openPoint(x, j, z);
+							PathPoint pathpoint3 = this.openPoint(x, i, z);
+							pathpoint3.nodeType = PathNodeType.BLOCKED;
+							pathpoint3.costMalus = -1.0F;
+							return pathpoint3;
+						}
+
+						if (j++ >= this.entity.getMaxFallHeight()) {
+							PathPoint pathpoint2 = this.openPoint(x, y, z);
 							pathpoint2.nodeType = PathNodeType.BLOCKED;
 							pathpoint2.costMalus = -1.0F;
 							return pathpoint2;
 						}
 
-						PathPoint pathpoint1 = this.openPoint(x, y, z);
-						if (i++ >= this.entity.getMaxFallHeight()) {
-							pathpoint1.nodeType = PathNodeType.BLOCKED;
-							pathpoint1.costMalus = -1.0F;
-							return pathpoint1;
-						}
-
 						pathnodetype = this.func_237230_a_(this.entity, x, y, z);
 						f = this.entity.getPathPriority(pathnodetype);
 						if (pathnodetype != PathNodeType.OPEN && f >= 0.0F) {
-							pathpoint = pathpoint1;
-							pathpoint1.nodeType = pathnodetype;
-							pathpoint1.costMalus = Math.max(pathpoint1.costMalus, f);
+							pathpoint = this.openPoint(x, y, z);
+							pathpoint.nodeType = pathnodetype;
+							pathpoint.costMalus = Math.max(pathpoint.costMalus, f);
 							break;
 						}
 
 						if (f < 0.0F) {
+							PathPoint pathpoint1 = this.openPoint(x, y, z);
 							pathpoint1.nodeType = PathNodeType.BLOCKED;
 							pathpoint1.costMalus = -1.0F;
 							return pathpoint1;

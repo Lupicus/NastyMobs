@@ -30,6 +30,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
 public class NastyWolfEntity extends WolfEntity // MonsterEntity
 {
@@ -140,7 +141,7 @@ public class NastyWolfEntity extends WolfEntity // MonsterEntity
 
 	public static void onInfect(WolfEntity mob)
 	{
-		World world = mob.world;
+		ServerWorld world = (ServerWorld) mob.world;
 		Vector3d mobpos = mob.getPositionVec();
 		if (mob.func_233570_aj_()) // onGround
 			mob.setMotion(0, 0, 0);

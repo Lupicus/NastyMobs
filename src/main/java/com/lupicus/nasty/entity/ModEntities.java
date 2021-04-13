@@ -6,7 +6,6 @@ import com.lupicus.nasty.renderer.entity.NastySkeletonRenderer;
 import com.lupicus.nasty.util.SpawnData;
 import com.lupicus.nasty.renderer.entity.NastyWolfRenderer;
 
-import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
@@ -15,6 +14,7 @@ import net.minecraft.world.gen.Heightmap;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.DungeonHooks;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
 
 public class ModEntities
@@ -35,13 +35,14 @@ public class ModEntities
 		forgeRegistry.registerAll(NASTY_SKELETON, NASTY_WOLF);
 
 		EntitySpawnPlacementRegistry.register(NASTY_SKELETON, EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, NastySkeletonEntity::canSpawn);
+		EntitySpawnPlacementRegistry.register(NASTY_WOLF, EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, NastyWolfEntity::canSpawn);
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	public static void register(EntityRendererManager renderManager)
+	public static void setupClient()
 	{
-		renderManager.register(NASTY_SKELETON, new NastySkeletonRenderer(renderManager));
-		renderManager.register(NASTY_WOLF, new NastyWolfRenderer(renderManager));
+		RenderingRegistry.registerEntityRenderingHandler(NASTY_SKELETON, rm -> new NastySkeletonRenderer(rm));
+		RenderingRegistry.registerEntityRenderingHandler(NASTY_WOLF, rm -> new NastyWolfRenderer(rm));
 	}
 
 	public static void addSpawnData()

@@ -5,7 +5,6 @@ import com.lupicus.nasty.entity.ModEntities;
 import com.lupicus.nasty.item.ModItems;
 import com.lupicus.nasty.sound.ModSounds;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.util.SoundEvent;
@@ -36,17 +35,18 @@ public class Main
 		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, MyConfig.COMMON_SPEC);
     }
 
-    @SubscribeEvent
+	@SuppressWarnings("deprecation")
+	@SubscribeEvent
 	public void setup(final FMLCommonSetupEvent event)
 	{
+		net.minecraftforge.fml.DeferredWorkQueue.runLater(() -> ModItems.setup());
 	}
 
 	@OnlyIn(Dist.CLIENT)
 	@SubscribeEvent
 	public void setupClient(final FMLClientSetupEvent event)
 	{
-		Minecraft mc = event.getMinecraftSupplier().get();
-		ModEntities.register(mc.getRenderManager());
+		ModEntities.setupClient();
 	}
 
 	@SubscribeEvent

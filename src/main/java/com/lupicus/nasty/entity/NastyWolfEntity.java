@@ -1,5 +1,7 @@
 package com.lupicus.nasty.entity;
 
+import java.util.Random;
+
 import com.lupicus.nasty.config.MyConfig;
 
 import net.minecraft.entity.CreatureAttribute;
@@ -20,6 +22,7 @@ import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
 import net.minecraft.entity.ai.goal.SitGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WaterAvoidingRandomWalkingGoal;
+import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -27,6 +30,9 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.Difficulty;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 
 public class NastyWolfEntity extends WolfEntity // MonsterEntity
@@ -75,6 +81,37 @@ public class NastyWolfEntity extends WolfEntity // MonsterEntity
 	public CreatureAttribute getCreatureAttribute()
 	{
 		return CreatureAttribute.UNDEAD;
+	}
+
+	public static boolean canSpawn(EntityType<? extends NastyWolfEntity> type, IWorld worldIn, SpawnReason reason,
+			BlockPos pos, Random randomIn)
+	{
+		return worldIn.getDifficulty() != Difficulty.PEACEFUL && MonsterEntity.isValidLightLevel(worldIn, pos, randomIn) && canSpawnOn(type, worldIn, reason, pos, randomIn);
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public float getBlockPathWeight(BlockPos pos, IWorldReader worldIn)
+	{
+		return 0.5F - worldIn.getBrightness(pos);
+	}
+
+	@Override
+	public int getMaxSpawnedInChunk()
+	{
+		return 4;
+	}
+
+	@Override
+	public boolean canDespawn(double distance)
+	{
+		return true;
+	}
+
+	@Override
+	protected boolean isDespawnPeaceful()
+	{
+		return true;
 	}
 
 	@Override

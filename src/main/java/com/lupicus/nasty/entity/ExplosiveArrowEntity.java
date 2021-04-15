@@ -42,6 +42,11 @@ public class ExplosiveArrowEntity extends ArrowEntity
 		super(type, world);
 	}
 
+	public ExplosiveArrowEntity(World worldIn, double x, double y, double z)
+	{
+		super(worldIn, x, y, z);
+	}
+
 	public ExplosiveArrowEntity(World worldIn, LivingEntity shooter)
 	{
 		super(worldIn, shooter);

@@ -19,6 +19,10 @@ public class MagicArrowEntity extends ArrowEntity
 		super(type, world);
 	}
 
+	public MagicArrowEntity(World worldIn, double x, double y, double z) {
+		super(worldIn, x, y, z);
+	}
+
 	public MagicArrowEntity(World worldIn, LivingEntity shooter) {
 		super(worldIn, shooter);
 	}

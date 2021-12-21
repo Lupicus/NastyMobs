@@ -3,10 +3,10 @@ package com.lupicus.nasty.renderer.entity;
 import com.lupicus.nasty.Main;
 import com.lupicus.nasty.entity.NastySkeletonEntity;
 
-import net.minecraft.client.renderer.entity.EntityRendererManager;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.SkeletonRenderer;
-import net.minecraft.entity.monster.AbstractSkeletonEntity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.monster.AbstractSkeleton;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -22,12 +22,12 @@ public class NastySkeletonRenderer extends SkeletonRenderer
 			new ResourceLocation(Main.MODID, "textures/entity/skeleton_5.png"),
 	};
 
-	public NastySkeletonRenderer(EntityRendererManager renderManagerIn) {
+	public NastySkeletonRenderer(EntityRendererProvider.Context renderManagerIn) {
 		super(renderManagerIn);
 	}
 
 	@Override
-	public ResourceLocation getEntityTexture(AbstractSkeletonEntity entity) {
+	public ResourceLocation getTextureLocation(AbstractSkeleton entity) {
 		int subtype = ((NastySkeletonEntity) entity).getSubType();
 		return TEXTURES[subtype];
 	}

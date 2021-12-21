@@ -4,43 +4,43 @@ import java.util.Random;
 
 import com.lupicus.nasty.config.MyConfig;
 
-import net.minecraft.entity.CreatureAttribute;
-import net.minecraft.entity.CreatureEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ILivingEntityData;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.goal.HurtByTargetGoal;
-import net.minecraft.entity.ai.goal.LeapAtTargetGoal;
-import net.minecraft.entity.ai.goal.LookAtGoal;
-import net.minecraft.entity.ai.goal.LookRandomlyGoal;
-import net.minecraft.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
-import net.minecraft.entity.ai.goal.NonTamedTargetGoal;
-import net.minecraft.entity.ai.goal.SwimGoal;
-import net.minecraft.entity.ai.goal.WaterAvoidingRandomWalkingGoal;
-import net.minecraft.entity.monster.MonsterEntity;
-import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.passive.WolfEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.IServerWorld;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.MobType;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.SpawnGroupData;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.LeapAtTargetGoal;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
+import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.Wolf;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.phys.Vec3;
 
-public class NastyWolfEntity extends WolfEntity // MonsterEntity
+public class NastyWolfEntity extends Wolf // Monster
 {
-	public NastyWolfEntity(EntityType<? extends WolfEntity> type, World worldIn)
+	public NastyWolfEntity(EntityType<? extends Wolf> type, Level worldIn)
 	{
 		super(type, worldIn);
 	}
@@ -48,99 +48,99 @@ public class NastyWolfEntity extends WolfEntity // MonsterEntity
 	@Override
 	protected void registerGoals()
 	{
-		this.goalSelector.addGoal(1, new SwimGoal(this));
-		//this.goalSelector.addGoal(2, new SitGoal(this));
-		//this.goalSelector.addGoal(3, new WolfEntity.AvoidEntityGoal(this, LlamaEntity.class, 24.0F, 1.5D, 1.5D));
+		this.goalSelector.addGoal(1, new FloatGoal(this));
+		//this.goalSelector.addGoal(2, new SitWhenOrderedToGoal(this));
+		//this.goalSelector.addGoal(3, new Wolf.WolfAvoidEntityGoal<>(this, Llama.class, 24.0F, 1.5D, 1.5D));
 		this.goalSelector.addGoal(4, new LeapAtTargetGoal(this, 0.4F));
 		this.goalSelector.addGoal(5, new AttackGoal(this, 1.0D, true));
 		//this.goalSelector.addGoal(6, new FollowOwnerGoal(this, 1.0D, 10.0F, 2.0F, false));
 		//this.goalSelector.addGoal(7, new BreedGoal(this, 1.0D));
-		this.goalSelector.addGoal(8, new WaterAvoidingRandomWalkingGoal(this, 1.0D));
+		this.goalSelector.addGoal(8, new WaterAvoidingRandomStrollGoal(this, 1.0D));
 		//this.goalSelector.addGoal(9, new BegGoal(this, 8.0F));
-		this.goalSelector.addGoal(10, new LookAtGoal(this, PlayerEntity.class, 8.0F));
-		this.goalSelector.addGoal(10, new LookRandomlyGoal(this));
+		this.goalSelector.addGoal(10, new LookAtPlayerGoal(this, Player.class, 8.0F));
+		this.goalSelector.addGoal(10, new RandomLookAroundGoal(this));
 		this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
-		this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
+		this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
 		//this.targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
 		//this.targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
-		//this.targetSelector.addGoal(3, (new HurtByTargetGoal(this)).setCallsForHelp());
-		//this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, 10, true, false, this::func_233680_b_));
-		this.targetSelector.addGoal(5, new NonTamedTargetGoal<>(this, AnimalEntity.class, false, TARGET_ENTITIES));		
-		//this.targetSelector.addGoal(6, new NonTamedTargetGoal<>(this, TurtleEntity.class, false, TurtleEntity.TARGET_DRY_BABY));
-		//this.targetSelector.addGoal(7, new NearestAttackableTargetGoal<>(this, AbstractSkeletonEntity.class, false));
-		//this.targetSelector.addGoal(8, new ResetAngerGoal<>(this, true));
+		//this.targetSelector.addGoal(3, (new HurtByTargetGoal(this)).setAlertOthers());
+		//this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, this::func_233680_b_));
+		this.targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, Animal.class, false, PREY_SELECTOR));		
+		//this.targetSelector.addGoal(6, new NonTameRandomTargetGoal<>(this, Turtle.class, false, Turtle.BABY_ON_LAND_SELECTOR));
+		//this.targetSelector.addGoal(7, new NearestAttackableTargetGoal<>(this, AbstractSkeleton.class, false));
+		//this.targetSelector.addGoal(8, new ResetUniversalAngerTargetGoal<>(this, true));
 	}
 
-	public static AttributeModifierMap.MutableAttribute registerAttibutes() {
-		return WolfEntity.func_234233_eS_()
-				.func_233815_a_(Attributes.field_233821_d_, (double) 0.35F) // movement_speed
-				.func_233815_a_(Attributes.field_233818_a_, 20.0D) // max_health
-				.func_233815_a_(Attributes.field_233823_f_, 4.0D) // attack_damage
-				.func_233815_a_(Attributes.field_233819_b_, 32.0D); // follow_range
+	public static AttributeSupplier.Builder createAttributes() {
+		return Wolf.createAttributes()
+				.add(Attributes.MOVEMENT_SPEED, (double) 0.35F)
+				.add(Attributes.MAX_HEALTH, 20.0D)
+				.add(Attributes.ATTACK_DAMAGE, 4.0D)
+				.add(Attributes.FOLLOW_RANGE, 32.0D);
 	}
 
 	@Override
-	public CreatureAttribute getCreatureAttribute()
+	public MobType getMobType()
 	{
-		return CreatureAttribute.UNDEAD;
+		return MobType.UNDEAD;
 	}
 
-	public static boolean canSpawn(EntityType<? extends NastyWolfEntity> type, IServerWorld worldIn, SpawnReason reason,
+	public static boolean checkSpawnRules(EntityType<? extends NastyWolfEntity> type, ServerLevelAccessor worldIn, MobSpawnType reason,
 			BlockPos pos, Random randomIn)
 	{
-		return worldIn.getDifficulty() != Difficulty.PEACEFUL && MonsterEntity.isValidLightLevel(worldIn, pos, randomIn) && canSpawnOn(type, worldIn, reason, pos, randomIn);
+		return worldIn.getDifficulty() != Difficulty.PEACEFUL && Monster.isDarkEnoughToSpawn(worldIn, pos, randomIn) && checkMobSpawnRules(type, worldIn, reason, pos, randomIn);
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public float getBlockPathWeight(BlockPos pos, IWorldReader worldIn)
+	public float getWalkTargetValue(BlockPos pos, LevelReader worldIn)
 	{
 		return 0.5F - worldIn.getBrightness(pos);
 	}
 
 	@Override
-	public int getMaxSpawnedInChunk()
+	public int getMaxSpawnClusterSize()
 	{
 		return 4;
 	}
 
 	@Override
-	public boolean canDespawn(double distance)
+	public boolean removeWhenFarAway(double distance)
 	{
 		return true;
 	}
 
 	@Override
-	protected boolean isDespawnPeaceful()
+	protected boolean shouldDespawnInPeaceful()
 	{
 		return true;
 	}
 
 	@Override
-	public boolean isBegging()
+	public boolean isInterested()
 	{
 		return false;
 	}
 
 	@Override
-	public boolean isTamed()
+	public boolean isTame()
 	{
 		return false;
 	}
 
 	@Override
-	public void setTamedBy(PlayerEntity player)
+	public void tame(Player player)
 	{
 	}
 
 	@Override
-	public boolean canBeLeashedTo(PlayerEntity player)
+	public boolean canBeLeashed(Player player)
 	{
 		return false;
 	}
 
 	@Override
-	public boolean canMateWith(AnimalEntity otherAnimal)
+	public boolean canMate(Animal otherAnimal)
 	{
 		return false;
 	}
@@ -152,36 +152,36 @@ public class NastyWolfEntity extends WolfEntity // MonsterEntity
 	}
 
 	@Override
-	public ActionResultType func_230254_b_(PlayerEntity player, Hand hand) // processInteract
+	public InteractionResult mobInteract(Player player, InteractionHand hand)
 	{
-		return ActionResultType.PASS;
+		return InteractionResult.PASS;
 	}
 
 	@Override
-	public boolean isOnSameTeam(Entity entityIn)
+	public boolean isAlliedTo(Entity entityIn)
 	{
 		if (entityIn instanceof NastySkeletonEntity)
 			return true;
 		return false;
 	}
 
-	public static boolean canInfect(WolfEntity mob)
+	public static boolean canInfect(Wolf mob)
 	{
-		if (MyConfig.virusMode2 != MyConfig.VMode.OFF && mob.getRNG().nextFloat() < MyConfig.virusChance2)
+		if (MyConfig.virusMode2 != MyConfig.VMode.OFF && mob.getRandom().nextFloat() < MyConfig.virusChance2)
 		{
 			if (MyConfig.virusMode2 == MyConfig.VMode.WILD)
-				return !mob.isTamed();
+				return !mob.isTame();
 			return !mob.hasCustomName();
 		}
 		return false;
 	}
 
-	public static void onInfect(WolfEntity mob)
+	public static void onInfect(Wolf mob)
 	{
-		ServerWorld world = (ServerWorld) mob.world;
-		Vector3d mobpos = mob.getPositionVec();
-		if (mob.func_233570_aj_()) // onGround
-			mob.setMotion(0, 0, 0);
+		ServerLevel world = (ServerLevel) mob.level;
+		Vec3 mobpos = mob.position();
+		if (mob.isOnGround())
+			mob.setDeltaMovement(0, 0, 0);
 
 		NastyWolfEntity newmob = ModEntities.NASTY_WOLF.create(world);
 		if (mob.hasCustomName())
@@ -191,60 +191,60 @@ public class NastyWolfEntity extends WolfEntity // MonsterEntity
 		}
 		newmob.setInvisible(mob.isInvisible());
 		newmob.setInvulnerable(mob.isInvulnerable());
-		newmob.setLocationAndAngles(mobpos.getX(), mobpos.getY(), mobpos.getZ(), mob.rotationYaw, mob.rotationPitch);
+		newmob.moveTo(mobpos.x(), mobpos.y(), mobpos.z(), mob.getYRot(), mob.getXRot());
 
-		newmob.onInitialSpawn(world, world.getDifficultyForLocation(new BlockPos(mobpos)), SpawnReason.CONVERSION, (ILivingEntityData) null,
-				(CompoundNBT) null);
+		newmob.finalizeSpawn(world, world.getCurrentDifficultyAt(new BlockPos(mobpos)), MobSpawnType.CONVERSION, (SpawnGroupData) null,
+				(CompoundTag) null);
 
-		newmob.setGrowingAge(mob.getGrowingAge());
+		newmob.setAge(mob.getAge());
 
-		if (mob instanceof MobEntity)
+		if (mob instanceof Mob)
 		{
-			MobEntity from = (MobEntity) mob;
-			if (from.isNoDespawnRequired())
-				newmob.enablePersistence();
-		    newmob.setNoAI(from.isAIDisabled());
-		    //newmob.setRevengeTarget(from.getRevengeTarget());
-			newmob.rotationYawHead = from.rotationYawHead;
-			newmob.renderYawOffset = from.rotationYawHead;
+			Mob from = (Mob) mob;
+			if (from.isPersistenceRequired())
+				newmob.setPersistenceRequired();
+			newmob.setNoAi(from.isNoAi());
+			//newmob.setLastHurtByMob(from.getLastHurtByMob());
+			newmob.yHeadRot = from.yHeadRot;
+			newmob.yBodyRot = from.yHeadRot;
 		}
-		newmob.setMotion(mob.getMotion());
+		newmob.setDeltaMovement(mob.getDeltaMovement());
 
-		// SoundEvents.ENTITY_ZOMBIE_VILLAGER_CONVERTED
-	    world.playEvent((PlayerEntity)null, 1027, newmob.func_233580_cy_(), 0);
-		world.addEntity(newmob);
-		mob.remove();
+		// SoundEvents.ZOMBIE_VILLAGER_CONVERTED
+		world.levelEvent((Player) null, 1027, newmob.blockPosition(), 0);
+		world.addFreshEntity(newmob);
+		mob.discard();
 	}
 
 	public static class AttackGoal extends MeleeAttackGoal
 	{
 		private double speed;
 
-		public AttackGoal(CreatureEntity creature, double speedIn, boolean useLongMemory) {
+		public AttackGoal(PathfinderMob creature, double speedIn, boolean useLongMemory) {
 			super(creature, speedIn, useLongMemory);
 			speed = speedIn;
 		}
 
 		@Override
 		protected void checkAndPerformAttack(LivingEntity enemy, double distToEnemySqr) {
-			if (func_234041_j_() > 0) // get attackTick
+			if (!isTimeToAttack())
 				return;
 			double d0 = this.getAttackReachSqr(enemy);
 			if (distToEnemySqr <= d0) {
-				func_234039_g_(); // reset attackTick
-				this.attacker.swingArm(Hand.MAIN_HAND);
-				this.attacker.attackEntityAsMob(enemy);
+				resetAttackCooldown(); // reset attackTick
+				this.mob.swing(InteractionHand.MAIN_HAND);
+				this.mob.doHurtTarget(enemy);
 			}
-			else if (d0 < 4.0 && attacker.getNavigator().noPath())
+			else if (d0 < 4.0 && mob.getNavigation().isDone())
 			{
 				// (in blind spot) move the mob closer so it can attack
-				double x = enemy.getPosX();
-				double y = enemy.getPosY();
-				double z = enemy.getPosZ();
-				x = (x - attacker.getPosX()) * 0.5 + x;
-				y = (y - attacker.getPosY()) * 0.5 + y;
-				z = (z - attacker.getPosZ()) * 0.5 + z;
-				attacker.getMoveHelper().setMoveTo(x, y, z, speed);
+				double x = enemy.getX();
+				double y = enemy.getY();
+				double z = enemy.getZ();
+				x = (x - mob.getX()) * 0.5 + x;
+				y = (y - mob.getY()) * 0.5 + y;
+				z = (z - mob.getZ()) * 0.5 + z;
+				mob.getMoveControl().setWantedPosition(x, y, z, speed);
 			}
 		}
 	}

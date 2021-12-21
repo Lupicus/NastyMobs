@@ -3,51 +3,51 @@ package com.lupicus.nasty.entity;
 import com.lupicus.nasty.config.MyConfig;
 import com.lupicus.nasty.item.ModItems;
 
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.projectile.ArrowEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.world.World;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.EntityHitResult;
 
-public class MagicArrowEntity extends ArrowEntity
+public class MagicArrowEntity extends Arrow
 {
 	private LivingEntity hitEntity = null;
 
-	public MagicArrowEntity(EntityType<? extends ArrowEntity> type, World world) {
+	public MagicArrowEntity(EntityType<? extends Arrow> type, Level world) {
 		super(type, world);
 	}
 
-	public MagicArrowEntity(World worldIn, double x, double y, double z) {
+	public MagicArrowEntity(Level worldIn, double x, double y, double z) {
 		super(worldIn, x, y, z);
 	}
 
-	public MagicArrowEntity(World worldIn, LivingEntity shooter) {
+	public MagicArrowEntity(Level worldIn, LivingEntity shooter) {
 		super(worldIn, shooter);
 	}
 
 	@Override
-	protected void arrowHit(LivingEntity living)
+	protected void doPostHurtEffects(LivingEntity living)
 	{
-		super.arrowHit(living);
+		super.doPostHurtEffects(living);
 		hitEntity = living;
 	}
 
 	@Override
-	protected void onEntityHit(EntityRayTraceResult raytraceResultIn)
+	protected void onHitEntity(EntityHitResult raytraceResultIn)
 	{
-		super.onEntityHit(raytraceResultIn);
+		super.onHitEntity(raytraceResultIn);
 		if (hitEntity != null) {
-			if (!hitEntity.isEntityUndead()) {
-				float damage = hitEntity.lastDamage + (float) MyConfig.magicDamage;
-				hitEntity.attackEntityFrom(DamageSource.MAGIC, damage);
+			if (!hitEntity.isInvertedHealAndHarm()) {
+				float damage = hitEntity.lastHurt + (float) MyConfig.magicDamage;
+				hitEntity.hurt(DamageSource.MAGIC, damage);
 			}
 		}
 	}
 
 	@Override
-	protected ItemStack getArrowStack() {
+	protected ItemStack getPickupItem() {
 		return new ItemStack(ModItems.MAGIC_ARROW);
 	}
 }

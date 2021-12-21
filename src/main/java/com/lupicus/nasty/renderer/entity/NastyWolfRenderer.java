@@ -2,10 +2,10 @@ package com.lupicus.nasty.renderer.entity;
 
 import com.lupicus.nasty.Main;
 
-import net.minecraft.client.renderer.entity.EntityRendererManager;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.WolfRenderer;
-import net.minecraft.entity.passive.WolfEntity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.animal.Wolf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -15,14 +15,14 @@ public class NastyWolfRenderer extends WolfRenderer
 	public static final ResourceLocation TEXTURE = new ResourceLocation(Main.MODID, "textures/entity/wolf.png");
 	public static final ResourceLocation ANGRY_TEXTURE = new ResourceLocation(Main.MODID, "textures/entity/wolf_angry.png");
 
-	public NastyWolfRenderer(EntityRendererManager renderManagerIn)
+	public NastyWolfRenderer(EntityRendererProvider.Context renderManagerIn)
 	{
 		super(renderManagerIn);
 	}
 
 	@Override
-	public ResourceLocation getEntityTexture(WolfEntity entity)
+	public ResourceLocation getTextureLocation(Wolf entity)
 	{
-		return entity.func_233678_J__() ? ANGRY_TEXTURE : TEXTURE; // isAngry
+		return entity.isAngry() ? ANGRY_TEXTURE : TEXTURE;
 	}
 }

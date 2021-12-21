@@ -1,5 +1,8 @@
 package com.lupicus.nasty.config;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,7 +18,7 @@ import net.minecraftforge.common.ForgeConfigSpec.EnumValue;
 import net.minecraftforge.common.ForgeConfigSpec.IntValue;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 
 @Mod.EventBusSubscriber(modid = Main.MODID, bus=Mod.EventBusSubscriber.Bus.MOD)
 public class MyConfig
@@ -61,7 +64,7 @@ public class MyConfig
 	public static VMode virusMode2;
 
 	@SubscribeEvent
-	public static void onModConfigEvent(final ModConfig.ModConfigEvent configEvent)
+	public static void onModConfigEvent(final ModConfigEvent configEvent)
 	{
 		if (configEvent.getConfig().getSpec() == MyConfig.COMMON_SPEC)
 		{
@@ -154,10 +157,9 @@ public class MyConfig
 		return ret;
 	}
 
-	private static String[] extract(String value)
+	private static String[] extract(List<? extends String> value)
 	{
-		String[] ret = value.split(";");
-		return ret;
+		return value.toArray(new String[value.size()]);
 	}
 
 	public static class Common
@@ -187,13 +189,16 @@ public class MyConfig
 		public final IntValue spawnLightLevel;
 		public final BooleanValue spawnTempBased;
 		public final ConfigValue<String> spawnVariantWeights;
-		public final ConfigValue<String> biomeAdjustments;
+		public final ConfigValue<List<? extends String>> biomeAdjustments;
 		public final EnumValue<VMode> virusMode2;
 
 		public Common(ForgeConfigSpec.Builder builder)
 		{
+			List<String> biomeAdjList = Arrays.asList("minecraft:plains,*,-0.2,0.2", "minecraft:swamp,0,0.2,0.0",
+					"minecraft:swamp,*,0.1,-0.1", "minecraft:badlands,*,0.3,0.3", "minecraft:dark_forest_hills,*,0.3,0.3");
 			String baseTrans = Main.MODID + ".config.";
 			String sectionTrans;
+
 			builder.push("Nasty Skeleton");
 			sectionTrans = baseTrans + "skeleton.";
 			minHealth = builder
@@ -295,7 +300,7 @@ public class MyConfig
 			biomeAdjustments = builder
 					.comment("Biome adjustments (biome,variant,hp,speed)")
 					.translation(sectionTrans + "biome_adjuments")
-					.define("BiomeAdjustments", "minecraft:plains,*,-0.2,0.2;minecraft:swamp,0,0.2,0.0;minecraft:swamp,*,0.1,-0.1;minecraft:badlands,*,0.3,0.3;minecraft:dark_forest_hills,*,0.3,0.3");
+					.defineList("BiomeAdjustments", biomeAdjList, Common::isString);
 			builder.pop();
 
 			builder.push("Nasty Wolf");
@@ -309,6 +314,11 @@ public class MyConfig
 					.translation(sectionTrans + "virus_chance")
 					.defineInRange("VirusChance", () -> 0.25, 0.0, 1.0);
 			builder.pop();
+		}
+
+		public static boolean isString(Object o)
+		{
+			return (o instanceof String);
 		}
 	}
 

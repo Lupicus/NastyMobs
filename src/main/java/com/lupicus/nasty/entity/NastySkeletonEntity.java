@@ -2,6 +2,7 @@ package com.lupicus.nasty.entity;
 
 import java.util.HashMap;
 import java.util.Random;
+import javax.annotation.Nullable;
 
 import com.lupicus.nasty.config.MyConfig;
 import com.lupicus.nasty.entity.ai.controller.JumpMovementController;
@@ -10,244 +11,246 @@ import com.lupicus.nasty.item.ModItems;
 import com.lupicus.nasty.pathfinding.JumpPathNavigator;
 import com.lupicus.nasty.util.ArrowHelper;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ILivingEntityData;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.attributes.AttributeModifier.Operation;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
-import net.minecraft.entity.ai.goal.FleeSunGoal;
-import net.minecraft.entity.ai.goal.HurtByTargetGoal;
-import net.minecraft.entity.ai.goal.LookAtGoal;
-import net.minecraft.entity.ai.goal.LookRandomlyGoal;
-import net.minecraft.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
-import net.minecraft.entity.ai.goal.RangedBowAttackGoal;
-import net.minecraft.entity.ai.goal.RestrictSunGoal;
-import net.minecraft.entity.ai.goal.WaterAvoidingRandomWalkingGoal;
-import net.minecraft.entity.monster.AbstractSkeletonEntity;
-import net.minecraft.entity.monster.SkeletonEntity;
-import net.minecraft.entity.passive.IronGolemEntity;
-import net.minecraft.entity.passive.WolfEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.entity.projectile.AbstractArrowEntity;
-import net.minecraft.entity.projectile.ArrowEntity;
-import net.minecraft.entity.projectile.ProjectileHelper;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.BowItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.pathfinding.PathNavigator;
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.IServerWorld;
-import net.minecraft.world.LightType;
-import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.storage.IWorldInfo;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.SpawnGroupData;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.FleeSunGoal;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
+import net.minecraft.world.entity.ai.goal.RangedBowAttackGoal;
+import net.minecraft.world.entity.ai.goal.RestrictSunGoal;
+import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.entity.animal.IronGolem;
+import net.minecraft.world.entity.animal.Wolf;
+import net.minecraft.world.entity.monster.AbstractSkeleton;
+import net.minecraft.world.entity.monster.Skeleton;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.item.BowItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.ProjectileWeaponItem;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.storage.LevelData;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
 
-public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasVirus
+public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 {
 	public static final int NVARIANTS = 6;
 	private static int defVariant = 0;
 	private static boolean singleVariant = false;
 	private static HashMap<String,AdjParms> biomeMap = new HashMap<>();
-	private static final DataParameter<Integer> SUB_TYPE = EntityDataManager.createKey(NastySkeletonEntity.class, DataSerializers.VARINT);
-	private final RangedBowAttackGoal<NastySkeletonEntity> aiArrowAttack = new RangedBowAttackGoal<>(this, 1.0D, 20, 40.0F);
-	private final MeleeAttackGoal aiAttackOnCollide = new MeleeAttackGoal(this, 1.2D, false) {
-	    /**
-	     * Reset the task's internal state. Called when this task is interrupted by another one
-	     */
-	    @Override
-		public void resetTask() {
-	    	super.resetTask();
-	    	NastySkeletonEntity.this.setAggroed(false);
-	    }
+	private static final EntityDataAccessor<Integer> SUB_TYPE = SynchedEntityData.defineId(NastySkeletonEntity.class, EntityDataSerializers.INT);
+	private final RangedBowAttackGoal<NastySkeletonEntity> bowGoal = new RangedBowAttackGoal<>(this, 1.0D, 20, 40.0F);
+	private final MeleeAttackGoal meleeGoal = new MeleeAttackGoal(this, 1.2D, false) {
+		/**
+		 * Reset the task's internal state. Called when this task is interrupted by another one
+		 */
+		@Override
+		public void stop() {
+			super.stop();
+			NastySkeletonEntity.this.setAggressive(false);
+		}
 
-	    /**
-	     * Execute a one shot task or start executing a continuous task
-	     */
-	    @Override
-		public void startExecuting() {
-	    	super.startExecuting();
-	    	NastySkeletonEntity.this.setAggroed(true);
-	    }
+		/**
+		 * Execute a one shot task or start executing a continuous task
+		 */
+		@Override
+		public void start() {
+			super.start();
+			NastySkeletonEntity.this.setAggressive(true);
+		}
 	};
 
-	public NastySkeletonEntity(EntityType<? extends NastySkeletonEntity> type, World worldIn)
+	public NastySkeletonEntity(EntityType<? extends NastySkeletonEntity> type, Level worldIn)
 	{
 		super(type, worldIn);
-		setCombatTask();
-		moveController = new JumpMovementController(this);
+		reassessWeaponGoal();
+		moveControl = new JumpMovementController(this);
 	}
 
 	@Override
 	protected SoundEvent getAmbientSound()
 	{
-		return SoundEvents.ENTITY_SKELETON_AMBIENT;
+		return SoundEvents.SKELETON_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSourceIn)
 	{
-		return SoundEvents.ENTITY_SKELETON_HURT;
+		return SoundEvents.SKELETON_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound()
 	{
-		return SoundEvents.ENTITY_SKELETON_DEATH;
+		return SoundEvents.SKELETON_DEATH;
 	}
 
 	@Override
 	protected SoundEvent getStepSound()
 	{
-		return SoundEvents.ENTITY_SKELETON_STEP;
+		return SoundEvents.SKELETON_STEP;
 	}
 
-	public static AttributeModifierMap.MutableAttribute registerAttributes() {
-		return AbstractSkeletonEntity.func_234275_m_()
-				.func_233815_a_(Attributes.field_233821_d_, 0.30D) // movement_speed
-				.func_233815_a_(Attributes.field_233819_b_, 24.0D) // follow_range
-				.func_233815_a_(Attributes.field_233823_f_, 4.0D); // attack_damage
+	public static AttributeSupplier.Builder createAttributes() {
+		return AbstractSkeleton.createAttributes()
+				.add(Attributes.MOVEMENT_SPEED, 0.30D)
+				.add(Attributes.FOLLOW_RANGE, 24.0D)
+				.add(Attributes.ATTACK_DAMAGE, 4.0D);
 	}
 
 	@Override
 	protected void registerGoals()
 	{
 		if (MyConfig.virusChance > 0 && MyConfig.virusDistance > 0)
-			this.goalSelector.addGoal(1, new SpreadVirusGoal(this, SkeletonEntity.class, MyConfig.virusDistance, MyConfig.virusChance));
+			this.goalSelector.addGoal(1, new SpreadVirusGoal(this, Skeleton.class, MyConfig.virusDistance, MyConfig.virusChance));
 		this.goalSelector.addGoal(2, new RestrictSunGoal(this));
-	    this.goalSelector.addGoal(3, new FleeSunGoal(this, 1.0D));
-	    //this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, WolfEntity.class, 6.0F, 1.0D, 1.2D));
-	    this.goalSelector.addGoal(5, new WaterAvoidingRandomWalkingGoal(this, 1.0D));
-	    this.goalSelector.addGoal(6, new LookAtGoal(this, PlayerEntity.class, 8.0F));
-	    this.goalSelector.addGoal(6, new LookRandomlyGoal(this));
-	    this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
-	    this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
-	    this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, IronGolemEntity.class, true));
-	    //this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, TurtleEntity.class, 10, true, false, TurtleEntity.TARGET_DRY_BABY));
+		this.goalSelector.addGoal(3, new FleeSunGoal(this, 1.0D));
+		//this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, Wolf.class, 6.0F, 1.0D, 1.2D));
+		this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 1.0D));
+		this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
+		this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
+		this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
+		this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
+		this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, IronGolem.class, true));
+		//this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Turtle.class, 10, true, false, Turtle.BABY_ON_LAND_SELECTOR));
 	}
 
 	@Override
-	protected void registerData()
+	protected void defineSynchedData()
 	{
-		super.registerData();
-		this.dataManager.register(SUB_TYPE, 0);
+		super.defineSynchedData();
+		this.entityData.define(SUB_TYPE, 0);
 	}
 
 	@Override
-	protected PathNavigator createNavigator(World worldIn)
+	protected PathNavigation createNavigation(Level worldIn)
 	{
 		return new JumpPathNavigator(this, worldIn);
 	}
 
 	public int getSubType()
 	{
-		return dataManager.get(SUB_TYPE);
+		return entityData.get(SUB_TYPE);
 	}
 
 	@Override
-	public void writeAdditional(CompoundNBT compound)
+	public void addAdditionalSaveData(CompoundTag compound)
 	{
-		super.writeAdditional(compound);
+		super.addAdditionalSaveData(compound);
 		compound.putByte("SubType", (byte) getSubType());
 	}
 
 	@Override
-	public void readAdditional(CompoundNBT compound)
+	public void readAdditionalSaveData(CompoundTag compound)
 	{
-		super.readAdditional(compound);
-		dataManager.set(SUB_TYPE, (int) compound.getByte("SubType"));
+		super.readAdditionalSaveData(compound);
+		entityData.set(SUB_TYPE, (int) compound.getByte("SubType"));
 	}
 
 	@Override
-	protected ResourceLocation getLootTable()
+	public ResourceLocation getDefaultLootTable()
 	{
-		ResourceLocation res = super.getLootTable();
+		ResourceLocation res = super.getDefaultLootTable();
 		return new ResourceLocation(res.getNamespace(), res.getPath() + "/" + getSubType());
 	}
 
 	/**
-	 * Copied from AbstractSkeletonEntity, so we can use our version of aiArrowAttack
+	 * Copied from AbstractSkeleton, so we can use our version of bowGoal
 	 */
 	@Override
-	public void setCombatTask()
+	public void reassessWeaponGoal()
 	{
-		if (this.world != null && !this.world.isRemote) {
-			if (aiAttackOnCollide == null)
+		if (this.level != null && !this.level.isClientSide) {
+			if (meleeGoal == null)
 				return;
-	        this.goalSelector.removeGoal(this.aiAttackOnCollide);
-	        this.goalSelector.removeGoal(this.aiArrowAttack);
-	        ItemStack itemstack = this.getHeldItem(ProjectileHelper.getHandWith(this, Items.BOW));
-	        if (itemstack.getItem() instanceof BowItem) {
-	            int i = 20;
-	            if (this.world.getDifficulty() != Difficulty.HARD) {
-	                i = 40;
-	            }
+			this.goalSelector.removeGoal(this.meleeGoal);
+			this.goalSelector.removeGoal(this.bowGoal);
+			ItemStack itemstack = getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof BowItem));
+			if (itemstack.getItem() instanceof BowItem) {
+				int i = 20;
+				if (this.level.getDifficulty() != Difficulty.HARD) {
+					i = 40;
+				}
 
-	            this.aiArrowAttack.setAttackCooldown(i);
-	            this.goalSelector.addGoal(4, this.aiArrowAttack);
-	        } else {
-	        	this.goalSelector.addGoal(4, this.aiAttackOnCollide);
-	        }
+				this.bowGoal.setMinAttackInterval(i);
+				this.goalSelector.addGoal(4, this.bowGoal);
+			}
+			else {
+				this.goalSelector.addGoal(4, this.meleeGoal);
+			}
 		}
 	}
 
 	@Override
-	public ILivingEntityData onInitialSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason,
-			ILivingEntityData spawnDataIn, CompoundNBT dataTag)
+	@Nullable
+	public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, MobSpawnType reason,
+			@Nullable SpawnGroupData spawnDataIn, @Nullable CompoundTag dataTag)
 	{
-		BlockPos pos = func_233580_cy_(); // getPosition
+		BlockPos pos = blockPosition();
 		Biome biome = worldIn.getBiome(pos);
-		if (MyConfig.spawnTempBased && (reason == SpawnReason.NATURAL || reason == SpawnReason.CHUNK_GENERATION))
+		if (MyConfig.spawnTempBased && (reason == MobSpawnType.NATURAL || reason == MobSpawnType.CHUNK_GENERATION))
 		{
 			float temp = biome.getTemperature(pos);
 			int subtype = (singleVariant) ? defVariant : randomTempBased(temp);
-			dataManager.set(SUB_TYPE, subtype);
+			entityData.set(SUB_TYPE, subtype);
 		}
-		else if (reason != SpawnReason.CONVERSION)
+		else if (reason != MobSpawnType.CONVERSION)
 		{
 			int subtype = (singleVariant) ? defVariant : randomVariant();
-			dataManager.set(SUB_TYPE, subtype);
+			entityData.set(SUB_TYPE, subtype);
 		}
 
 		if (difficultyIn.getDifficulty() == Difficulty.HARD)
 		{
-			this.getAttribute(Attributes.field_233823_f_).func_233767_b_(new AttributeModifier("difficulty", 3.0, Operation.ADDITION));
+			this.getAttribute(Attributes.ATTACK_DAMAGE).addPermanentModifier(new AttributeModifier("difficulty", 3.0, Operation.ADDITION));
 		}
 
-		spawnDataIn = super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+		spawnDataIn = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
 
 		// calculate new health using horizontal distance (i.e. ignore Y)
-		IWorldInfo winfo = worldIn.getWorldInfo();
-		BlockPos spos = new BlockPos(winfo.getSpawnX(), winfo.getSpawnY(), winfo.getSpawnZ());
+		LevelData winfo = worldIn.getLevelData();
+		BlockPos spos = new BlockPos(winfo.getXSpawn(), winfo.getYSpawn(), winfo.getZSpawn());
 		double x0 = (double) spos.getX();
 		double z0 = (double) spos.getZ();
-		double xzf = worldIn.func_230315_m_().func_242724_f();
+		double xzf = worldIn.dimensionType().coordinateScale();
 		if (xzf != 1.0)
 		{
 			x0 /= xzf;
@@ -267,12 +270,12 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 			temp = ((MyConfig.maxHealth - MyConfig.minHealth) * p + MyConfig.minHealth);
 		}
 		float health = (float) Math.floor(temp);
-		this.getAttribute(Attributes.field_233818_a_).setBaseValue(health);
+		this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(health);
 		this.setHealth(getMaxHealth());
 
 		// adjust by biome
 //		String keyPrefix = biome.getRegistryName() + ":";
-		String keyPrefix = worldIn.func_241828_r().func_243612_b(Registry.field_239720_u_).getKey(biome) + ":";
+		String keyPrefix = worldIn.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).getKey(biome) + ":";
 		AdjParms adj = biomeMap.get(keyPrefix + getSubType());
 		if (adj == null)
 			adj = biomeMap.get(keyPrefix + "*");
@@ -281,13 +284,13 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 			double val = adj.hp;
 			if (val != 0.0)
 			{
-				this.getAttribute(Attributes.field_233818_a_).func_233767_b_(new AttributeModifier("biome", val, Operation.MULTIPLY_BASE));
+				this.getAttribute(Attributes.MAX_HEALTH).addPermanentModifier(new AttributeModifier("biome", val, Operation.MULTIPLY_BASE));
 				this.setHealth(getMaxHealth());
 			}
 			val = adj.speed;
 			if (val != 0.0)
 			{
-				this.getAttribute(Attributes.field_233821_d_).func_233767_b_(new AttributeModifier("biome", val, Operation.MULTIPLY_BASE));
+				this.getAttribute(Attributes.MOVEMENT_SPEED).addPermanentModifier(new AttributeModifier("biome", val, Operation.MULTIPLY_BASE));
 			}
 		}
 
@@ -384,7 +387,7 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 			sum += weights[i];
 		if (sum > 0)
 		{
-			int j = rand.nextInt(sum);
+			int j = random.nextInt(sum);
 			for (int i = 0; i < NVARIANTS; ++i)
 			{
 				if (j < weights[i])
@@ -395,19 +398,19 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 		return defVariant;
 	}
 
-	public static boolean isValidLightLevel(IServerWorld worldIn, BlockPos pos, Random randomIn)
+	public static boolean isDarkEnoughToSpawn(ServerLevelAccessor worldIn, BlockPos pos, Random randomIn)
 	{
-		if (worldIn.getLightFor(LightType.SKY, pos) > randomIn.nextInt(32))
+		if (worldIn.getBrightness(LightLayer.SKY, pos) > randomIn.nextInt(32))
 			return false;
-		int i = worldIn.getWorld().isThundering() ? worldIn.getNeighborAwareLightSubtracted(pos, 10)
-				: worldIn.getLight(pos);
+		int i = worldIn.getLevel().isThundering() ? worldIn.getMaxLocalRawBrightness(pos, 10)
+				: worldIn.getMaxLocalRawBrightness(pos);
 		return i <= randomIn.nextInt(MyConfig.spawnLightLevel + 1);
 	}
 
-	public static boolean canSpawn(EntityType<? extends NastySkeletonEntity> type, IServerWorld worldIn, SpawnReason reason,
+	public static boolean checkSpawnRules(EntityType<? extends NastySkeletonEntity> type, ServerLevelAccessor worldIn, MobSpawnType reason,
 			BlockPos pos, Random randomIn)
 	{
-		return worldIn.getDifficulty() != Difficulty.PEACEFUL && isValidLightLevel(worldIn, pos, randomIn) && canSpawnOn(type, worldIn, reason, pos, randomIn);
+		return worldIn.getDifficulty() != Difficulty.PEACEFUL && isDarkEnoughToSpawn(worldIn, pos, randomIn) && checkMobSpawnRules(type, worldIn, reason, pos, randomIn);
 	}
 
 	protected void setPotionsBasedOnDifficulty(DifficultyInstance difficulty)
@@ -415,19 +418,19 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 		int amp = 2;
 		if (difficulty.getDifficulty() == Difficulty.HARD)
 			++amp;
-		this.addPotionEffect(new EffectInstance(Effects.JUMP_BOOST, Integer.MAX_VALUE, amp));
+		this.addEffect(new MobEffectInstance(MobEffects.JUMP, Integer.MAX_VALUE, amp));
 	}
 
 	@Override
-	protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty)
+	protected void populateDefaultEquipmentSlots(DifficultyInstance difficulty)
 	{
-		super.setEquipmentBasedOnDifficulty(difficulty);
+		super.populateDefaultEquipmentSlots(difficulty);
 
-		ItemStack stack = getItemStackFromSlot(EquipmentSlotType.HEAD);
+		ItemStack stack = getItemBySlot(EquipmentSlot.HEAD);
 		if (stack.isEmpty() || stack.getItem() == Items.LEATHER_HELMET)
 		{
 			stack = new ItemStack(Items.LEATHER_HELMET);
-			CompoundNBT nbt = stack.getOrCreateChildTag("display");
+			CompoundTag nbt = stack.getOrCreateTagElement("display");
 			int color;
 			int subtype = getSubType();
 			if (subtype == 0)
@@ -443,52 +446,57 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 			else
 				color = 0xFFD800;
 			nbt.putInt("color", color);
-			this.setItemStackToSlot(EquipmentSlotType.HEAD, stack);
+			this.setItemSlot(EquipmentSlot.HEAD, stack);
 		}
 	}
 
 	@Override
-	public void attackEntityWithRangedAttack(LivingEntity target, float distanceFactor)
+	public void performRangedAttack(LivingEntity target, float distanceFactor)
 	{
-		ItemStack itemstack = this.findAmmo(this.getHeldItem(ProjectileHelper.getHandWith(this, Items.BOW)));
-		AbstractArrowEntity abstractarrowentity = this.fireArrow(itemstack, distanceFactor);
-		if (this.getHeldItemMainhand().getItem() instanceof BowItem)
-			abstractarrowentity = ((BowItem) this.getHeldItemMainhand().getItem())
-					.customArrow(abstractarrowentity);
+		ItemStack bow = getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof BowItem));
+		ItemStack itemstack = getProjectile(bow);
+		AbstractArrow abstractarrowentity = this.getArrow(itemstack, distanceFactor);
+		if (bow.getItem() instanceof BowItem bowItem)
+			abstractarrowentity = bowItem.customArrow(abstractarrowentity);
 		enchantArrow(abstractarrowentity);
-		double d0 = target.getPosX() - this.getPosX();
-		double d1 = target.getPosYHeight(0.3333333333333333D) - abstractarrowentity.getPosY();
-		double d2 = target.getPosZ() - this.getPosZ();
-		double d3 = (double) MathHelper.sqrt(d0 * d0 + d2 * d2);
+		double d0 = target.getX() - this.getX();
+		double d1 = target.getY(0.3333333333333333D) - abstractarrowentity.getY();
+		double d2 = target.getZ() - this.getZ();
+		double d3 = Math.sqrt(d0 * d0 + d2 * d2);
 		if (d3 > 40.0)
 			return;
 		double velocity = 1.6;
-		d1 = ArrowHelper.computeY(d3, d1, velocity, abstractarrowentity.getPosY(), target.getPosY(), target.getHeight());
+		d1 = ArrowHelper.computeY(d3, d1, velocity, abstractarrowentity.getY(), target.getY(), target.getBbHeight());
 		float inaccuracy = 0.0F;
-		if (rand.nextDouble() < MyConfig.addInaccuracy)
-			inaccuracy = (float) (14 - world.getDifficulty().getId() * 4);
+		if (random.nextDouble() < MyConfig.addInaccuracy)
+			inaccuracy = (float) (14 - level.getDifficulty().getId() * 4);
 		abstractarrowentity.shoot(d0, d1, d2, (float) velocity, inaccuracy);
-		this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0F, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-		this.world.addEntity(abstractarrowentity);
+		this.playSound(SoundEvents.SKELETON_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
+		this.level.addFreshEntity(abstractarrowentity);
 	}
 
 	@Override
-	public ItemStack findAmmo(ItemStack shootable)
+	public boolean canFireProjectileWeapon(ProjectileWeaponItem item) {
+		return item instanceof BowItem;
+	}
+
+	@Override
+	public ItemStack getProjectile(ItemStack shootable)
 	{
 		int subtype = getSubType();
 		if (subtype == 2)
 			return new ItemStack(ModItems.MAGIC_ARROW);
 		if (subtype == 4)
 			return new ItemStack(ModItems.EXPLOSIVE_ARROW);
-		return super.findAmmo(shootable);
+		return super.getProjectile(shootable);
 	}
 
-	protected void enchantArrow(AbstractArrowEntity entity)
+	protected void enchantArrow(AbstractArrow entity)
 	{
 		// innate power and knockback
 		int i;
 		int j = 1;
-		if (world.getDifficulty() == Difficulty.HARD)
+		if (level.getDifficulty() == Difficulty.HARD)
 		{
 			j += 1;
 			i = MyConfig.bonusHardPower;
@@ -497,20 +505,20 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 			i = MyConfig.bonusPower;
 
 		if (i > 0)
-			entity.setDamage(entity.getDamage() + (double) (i + 1) * 0.5D);
+			entity.setBaseDamage(entity.getBaseDamage() + (double) (i + 1) * 0.5D);
 
 		if (j > 0)
-			entity.setKnockbackStrength(j);
+			entity.setKnockback(j);
 
 		// set custom enchantment based on subtype
 		int subtype = getSubType();
 		if (subtype == 0)
 		{
-			((ArrowEntity) entity).addEffect(new EffectInstance(Effects.POISON, MyConfig.poisonTime));
+			((Arrow) entity).addEffect(new MobEffectInstance(MobEffects.POISON, MyConfig.poisonTime));
 		}
 		else if (subtype == 1)
 		{
-			entity.setFire(100);
+			entity.setRemainingFireTicks(100);
 		}
 //		else if (subtype == 2)
 //		{
@@ -518,34 +526,34 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 //		}
 		else if (subtype == 3)
 		{
-			((ArrowEntity) entity).addEffect(new EffectInstance(Effects.LEVITATION, 140));
+			((Arrow) entity).addEffect(new MobEffectInstance(MobEffects.LEVITATION, 140));
 		}
 		else if (subtype == 5)
 		{
-			Effect effect = MyConfig.useBlindness ? Effects.BLINDNESS : Effects.NAUSEA;
-			((ArrowEntity) entity).addEffect(new EffectInstance(effect, MyConfig.yellowTime, 1));
+			MobEffect effect = MyConfig.useBlindness ? MobEffects.BLINDNESS : MobEffects.CONFUSION;
+			((Arrow) entity).addEffect(new MobEffectInstance(effect, MyConfig.yellowTime, 1));
 		}
 	}
 
 	@Override
-	public boolean attackEntityFrom(DamageSource source, float amount)
+	public boolean hurt(DamageSource source, float amount)
 	{
-		Entity entity = source.getTrueSource();
-		if (amount > 0.0F && entity != null && entity instanceof ServerPlayerEntity)
+		Entity entity = source.getEntity();
+		if (amount > 0.0F && entity != null && entity instanceof ServerPlayer)
 		{
-			PlayerEntity player = (PlayerEntity) entity;
-			ModifiableAttributeInstance attr = this.getAttribute(Attributes.field_233819_b_);
+			Player player = (Player) entity;
+			AttributeInstance attr = this.getAttribute(Attributes.FOLLOW_RANGE);
 			double new_range = 64.0;
 			if (new_range > attr.getBaseValue())
 				attr.setBaseValue(new_range);
-			this.setRevengeTarget(player);
+			this.setLastHurtByMob(player);
 		}
 		// Infect wolves that attack this skeleton
-		boolean flag = super.attackEntityFrom(source, amount);
-		entity = source.getImmediateSource();
-		if (flag && entity instanceof WolfEntity)
+		boolean flag = super.hurt(source, amount);
+		entity = source.getDirectEntity();
+		if (flag && entity instanceof Wolf)
 		{
-			WolfEntity mob = (WolfEntity) entity;
+			Wolf mob = (Wolf) entity;
 			if (NastyWolfEntity.canInfect(mob))
 				NastyWolfEntity.onInfect(mob);
 		}
@@ -553,23 +561,20 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 	}
 
 	@Override
-	protected void damageEntity(DamageSource source, float damageAmount)
+	protected void actuallyHurt(DamageSource source, float damageAmount)
 	{
 		if (source.isProjectile())
 			damageAmount *= MyConfig.arrowDamageMultiplier;
-		super.damageEntity(source, damageAmount);
+		super.actuallyHurt(source, damageAmount);
 	}
-
-	private static final EquipmentSlotType[] copyList = {EquipmentSlotType.HEAD, EquipmentSlotType.CHEST, EquipmentSlotType.LEGS,
-			EquipmentSlotType.FEET, EquipmentSlotType.MAINHAND, EquipmentSlotType.OFFHAND};
 
 	@Override
 	public void onInfect(Entity mob)
 	{
-		ServerWorld world = (ServerWorld) mob.world;
-		Vector3d mobpos = mob.getPositionVec();
-		if (mob.func_233570_aj_()) // onGround
-			mob.setMotion(0, 0, 0);
+		ServerLevel world = (ServerLevel) mob.level;
+		Vec3 mobpos = mob.position();
+		if (mob.isOnGround())
+			mob.setDeltaMovement(0, 0, 0);
 
 		NastySkeletonEntity newmob = ModEntities.NASTY_SKELETON.create(world);
 		if (mob.hasCustomName()) {
@@ -578,44 +583,44 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 		}
 		newmob.setInvisible(mob.isInvisible());
 		newmob.setInvulnerable(mob.isInvulnerable());
-		newmob.setLocationAndAngles(mobpos.getX(), mobpos.getY(), mobpos.getZ(), mob.rotationYaw, mob.rotationPitch);
-		newmob.dataManager.set(SUB_TYPE, getSubType());
+		newmob.moveTo(mobpos.x(), mobpos.y(), mobpos.z(), mob.getYRot(), mob.getXRot());
+		newmob.entityData.set(SUB_TYPE, getSubType());
 
-		newmob.onInitialSpawn(world, world.getDifficultyForLocation(new BlockPos(mobpos)), SpawnReason.CONVERSION, (ILivingEntityData) null,
-				(CompoundNBT) null);
+		newmob.finalizeSpawn(world, world.getCurrentDifficultyAt(new BlockPos(mobpos)), MobSpawnType.CONVERSION, (SpawnGroupData) null,
+				(CompoundTag) null);
 
-		if (mob instanceof MobEntity)
+		if (mob instanceof Mob)
 		{
-			MobEntity from = (MobEntity) mob;
+			Mob from = (Mob) mob;
 			ItemStack stack;
-			for (int i = 0; i < copyList.length; ++i)
+			for (EquipmentSlot slot : EquipmentSlot.values())
 			{
-				EquipmentSlotType slot = copyList[i];
-				stack = from.getItemStackFromSlot(slot);
-				newmob.setItemStackToSlot(slot, stack.copy());
-				newmob.setDropChance(slot, getDropChance(slot));
+				stack = from.getItemBySlot(slot);
+				newmob.setItemSlot(slot, stack.copy());
+				newmob.setDropChance(slot, getEquipmentDropChance(slot));
 				stack.setCount(0);
 			}
-			if (from.isNoDespawnRequired())
-				newmob.enablePersistence();
-		    newmob.setNoAI(from.isAIDisabled());
-		    newmob.setRevengeTarget(from.getRevengeTarget());
-			newmob.rotationYawHead = from.rotationYawHead;
-			newmob.renderYawOffset = from.rotationYawHead;
+			newmob.setCanPickUpLoot(from.canPickUpLoot());
+			if (from.isPersistenceRequired())
+				newmob.setPersistenceRequired();
+			newmob.setNoAi(from.isNoAi());
+			newmob.setLastHurtByMob(from.getLastHurtByMob());
+			newmob.yHeadRot = from.yHeadRot;
+			newmob.yBodyRot = from.yHeadRot;
 		}
-		Entity riding = mob.getRidingEntity();
+		Entity riding = mob.getVehicle();
 		if (riding != null)
 		{
 			mob.stopRiding();
 			newmob.startRiding(riding, true);
 		}
 		else
-			newmob.setMotion(mob.getMotion());
+			newmob.setDeltaMovement(mob.getDeltaMovement());
 
-		// SoundEvents.ENTITY_ZOMBIE_VILLAGER_CONVERTED
-	    world.playEvent((PlayerEntity)null, 1027, newmob.func_233580_cy_(), 0);
-		world.addEntity(newmob);
-		mob.remove();
+		// SoundEvents.ZOMBIE_VILLAGER_CONVERTED
+		world.levelEvent((Player) null, 1027, newmob.blockPosition(), 0);
+		world.addFreshEntity(newmob);
+		mob.discard();
 	}
 	
 	private static class AdjParms

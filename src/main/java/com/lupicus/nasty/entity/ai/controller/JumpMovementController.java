@@ -1,20 +1,19 @@
 package com.lupicus.nasty.entity.ai.controller;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.controller.MovementController;
-import net.minecraft.potion.Effects;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.Mth;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.control.MoveControl;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
-public class JumpMovementController extends MovementController
+public class JumpMovementController extends MoveControl
 {
-	public JumpMovementController(MobEntity mob)
+	public JumpMovementController(Mob mob)
 	{
 		super(mob);
 	}
@@ -22,29 +21,28 @@ public class JumpMovementController extends MovementController
 	@Override
 	public void tick()
 	{
-		if (this.action == MovementController.Action.MOVE_TO)
+		if (this.operation == MoveControl.Operation.MOVE_TO)
 		{
-	         this.action = MovementController.Action.WAIT;
-	         double d0 = this.posX - this.mob.getPosX();
-	         double d1 = this.posZ - this.mob.getPosZ();
-	         double d2 = this.posY - this.mob.getPosY();
+	         this.operation = MoveControl.Operation.WAIT;
+	         double d0 = this.wantedX - this.mob.getX();
+	         double d1 = this.wantedZ - this.mob.getZ();
+	         double d2 = this.wantedY - this.mob.getY();
 	         double d3 = d0 * d0 + d2 * d2 + d1 * d1;
 	         if (d3 < 2.500000277905201E-7D) {
-	            this.mob.setMoveForward(0.0F);
+	            this.mob.setZza(0.0F);
 	            return;
 	         }
 
-	         float f9 = (float) (MathHelper.atan2(d1, d0) * (180.0 / Math.PI)) - 90.0F;
-	         this.mob.rotationYaw = this.limitAngle(this.mob.rotationYaw, f9, 90.0F);
-	         this.mob.setAIMoveSpeed((float) (this.speed * this.mob.func_233637_b_(Attributes.field_233821_d_)));
-	         BlockPos blockpos = mob.func_233580_cy_(); // getPositionn
-	         BlockState blockstate = this.mob.world.getBlockState(blockpos);
-	         Block block = blockstate.getBlock();
-	         VoxelShape voxelshape = blockstate.getCollisionShape(this.mob.world, blockpos);
-	         if (d2 > (double) this.mob.stepHeight && d0 * d0 + d1 * d1 < (double) Math.max(1.0F, this.mob.getWidth()) || !voxelshape.isEmpty() && this.mob.getPosY() < voxelshape.getEnd(Direction.Axis.Y) + (double)blockpos.getY() &&
-	        		 (mob.isPotionActive(Effects.JUMP_BOOST) || (!block.isIn(BlockTags.DOORS) && !block.isIn(BlockTags.FENCES)))) {
-	            this.mob.getJumpController().setJumping();
-	            this.action = MovementController.Action.JUMPING;
+	         float f9 = (float) (Mth.atan2(d1, d0) * (180.0 / Math.PI)) - 90.0F;
+	         this.mob.setYRot(this.rotlerp(this.mob.getYRot(), f9, 90.0F));
+	         this.mob.setSpeed((float) (this.speedModifier * this.mob.getAttributeValue(Attributes.MOVEMENT_SPEED)));
+	         BlockPos blockpos = mob.blockPosition();
+	         BlockState blockstate = this.mob.level.getBlockState(blockpos);
+	         VoxelShape voxelshape = blockstate.getCollisionShape(this.mob.level, blockpos);
+	         if (d2 > (double) this.mob.maxUpStep && d0 * d0 + d1 * d1 < (double) Math.max(1.0F, this.mob.getBbWidth()) || !voxelshape.isEmpty() && this.mob.getY() < voxelshape.max(Direction.Axis.Y) + (double)blockpos.getY() &&
+	        		 (mob.hasEffect(MobEffects.JUMP) || (!blockstate.is(BlockTags.DOORS) && !blockstate.is(BlockTags.FENCES)))) {
+	            this.mob.getJumpControl().jump();
+	            this.operation = MoveControl.Operation.JUMPING;
 	         }
 		}
 		else

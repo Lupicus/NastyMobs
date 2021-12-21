@@ -1,22 +1,22 @@
 package com.lupicus.nasty.pathfinding;
 
-import net.minecraft.entity.MobEntity;
-import net.minecraft.pathfinding.GroundPathNavigator;
-import net.minecraft.pathfinding.PathFinder;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.pathfinder.PathFinder;
 
-public class JumpPathNavigator extends GroundPathNavigator
+public class JumpPathNavigator extends GroundPathNavigation
 {
-	public JumpPathNavigator(MobEntity entitylivingIn, World worldIn)
+	public JumpPathNavigator(Mob entitylivingIn, Level worldIn)
 	{
 		super(entitylivingIn, worldIn);
 	}
 
 	@Override
-	protected PathFinder getPathFinder(int num)
+	protected PathFinder createPathFinder(int num)
 	{
-		this.nodeProcessor = new JumpNodeProcessor();
-		this.nodeProcessor.setCanEnterDoors(true);
-		return new PathFinder(this.nodeProcessor, num);
+		this.nodeEvaluator = new JumpNodeProcessor();
+		this.nodeEvaluator.setCanPassDoors(true);
+		return new PathFinder(this.nodeEvaluator, num);
 	}
 }

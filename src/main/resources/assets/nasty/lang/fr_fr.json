@@ -1,0 +1,17 @@
+{
+	"item.nasty.skeleton_spawn_egg": "Œuf de spawn méchant squelette",
+	"item.nasty.wolf_spawn_egg": "Œuf de frayer de méchant loup",
+	"item.nasty.explosive_arrow": "Flèche explosive",
+	"item.nasty.magic_arrow": "Flèche magique",
+	"entity.nasty.skeleton": "Méchant squelette",
+	"entity.nasty.wolf": "Méchant loup",
+	"subtitles.nasty.item.armor.drop": "Gouttes de matériel",
+	"advancements.adventure.nasty.arrow_hit.title": "Depuis le centre-ville!",
+	"advancements.adventure.nasty.arrow_hit.description": "Frappé par un méchant squelette",
+	"advancements.adventure.nasty.kill_a_mob.title": "Douce vengeance",
+	"advancements.adventure.nasty.kill_a_mob.description": "Tuer un méchant squelette",
+	"advancements.adventure.nasty.kill_by_bow.title": "Comment ça se sent!",
+	"advancements.adventure.nasty.kill_by_bow.description": "Tuez un méchant squelette avec un arc et une flèche",
+	"advancements.adventure.nasty.kill_all_mobs.title": "Méchant tueur",
+	"advancements.adventure.nasty.kill_all_mobs.description": "Tuez chaque type de méchant squelette"
+}

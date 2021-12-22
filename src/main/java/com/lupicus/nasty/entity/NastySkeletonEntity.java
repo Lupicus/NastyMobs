@@ -78,23 +78,23 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 	private static final DataParameter<Integer> SUB_TYPE = EntityDataManager.createKey(NastySkeletonEntity.class, DataSerializers.VARINT);
 	private final RangedBowAttackGoal<NastySkeletonEntity> aiArrowAttack = new RangedBowAttackGoal<>(this, 1.0D, 20, 40.0F);
 	private final MeleeAttackGoal aiAttackOnCollide = new MeleeAttackGoal(this, 1.2D, false) {
-	    /**
-	     * Reset the task's internal state. Called when this task is interrupted by another one
-	     */
-	    @Override
+		/**
+		 * Reset the task's internal state. Called when this task is interrupted by another one
+		 */
+		@Override
 		public void resetTask() {
-	    	super.resetTask();
-	    	NastySkeletonEntity.this.setAggroed(false);
-	    }
+			super.resetTask();
+			NastySkeletonEntity.this.setAggroed(false);
+		}
 
-	    /**
-	     * Execute a one shot task or start executing a continuous task
-	     */
-	    @Override
+		/**
+		 * Execute a one shot task or start executing a continuous task
+		 */
+		@Override
 		public void startExecuting() {
-	    	super.startExecuting();
-	    	NastySkeletonEntity.this.setAggroed(true);
-	    }
+			super.startExecuting();
+			NastySkeletonEntity.this.setAggroed(true);
+		}
 	};
 
 	public NastySkeletonEntity(EntityType<? extends NastySkeletonEntity> type, World worldIn)
@@ -141,15 +141,15 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 		if (MyConfig.virusChance > 0 && MyConfig.virusDistance > 0)
 			this.goalSelector.addGoal(1, new SpreadVirusGoal(this, SkeletonEntity.class, MyConfig.virusDistance, MyConfig.virusChance));
 		this.goalSelector.addGoal(2, new RestrictSunGoal(this));
-	    this.goalSelector.addGoal(3, new FleeSunGoal(this, 1.0D));
-	    //this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, WolfEntity.class, 6.0F, 1.0D, 1.2D));
-	    this.goalSelector.addGoal(5, new WaterAvoidingRandomWalkingGoal(this, 1.0D));
-	    this.goalSelector.addGoal(6, new LookAtGoal(this, PlayerEntity.class, 8.0F));
-	    this.goalSelector.addGoal(6, new LookRandomlyGoal(this));
-	    this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
-	    this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
-	    this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, IronGolemEntity.class, true));
-	    //this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, TurtleEntity.class, 10, true, false, TurtleEntity.TARGET_DRY_BABY));
+		this.goalSelector.addGoal(3, new FleeSunGoal(this, 1.0D));
+		//this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, WolfEntity.class, 6.0F, 1.0D, 1.2D));
+		this.goalSelector.addGoal(5, new WaterAvoidingRandomWalkingGoal(this, 1.0D));
+		this.goalSelector.addGoal(6, new LookAtGoal(this, PlayerEntity.class, 8.0F));
+		this.goalSelector.addGoal(6, new LookRandomlyGoal(this));
+		this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
+		this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
+		this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, IronGolemEntity.class, true));
+		//this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, TurtleEntity.class, 10, true, false, TurtleEntity.TARGET_DRY_BABY));
 	}
 
 	@Override
@@ -200,20 +200,21 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 		if (this.world != null && !this.world.isRemote) {
 			if (aiAttackOnCollide == null)
 				return;
-	        this.goalSelector.removeGoal(this.aiAttackOnCollide);
-	        this.goalSelector.removeGoal(this.aiArrowAttack);
-	        ItemStack itemstack = this.getHeldItem(ProjectileHelper.getHandWith(this, Items.BOW));
-	        if (itemstack.getItem() instanceof BowItem) {
-	            int i = 20;
-	            if (this.world.getDifficulty() != Difficulty.HARD) {
-	                i = 40;
-	            }
+			this.goalSelector.removeGoal(this.aiAttackOnCollide);
+			this.goalSelector.removeGoal(this.aiArrowAttack);
+			ItemStack itemstack = this.getHeldItem(ProjectileHelper.getHandWith(this, Items.BOW));
+			if (itemstack.getItem() instanceof BowItem) {
+				int i = 20;
+				if (this.world.getDifficulty() != Difficulty.HARD) {
+					i = 40;
+				}
 
-	            this.aiArrowAttack.setAttackCooldown(i);
-	            this.goalSelector.addGoal(4, this.aiArrowAttack);
-	        } else {
-	        	this.goalSelector.addGoal(4, this.aiAttackOnCollide);
-	        }
+				this.aiArrowAttack.setAttackCooldown(i);
+				this.goalSelector.addGoal(4, this.aiArrowAttack);
+			}
+			else {
+				this.goalSelector.addGoal(4, this.aiAttackOnCollide);
+			}
 		}
 	}
 
@@ -560,9 +561,6 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 		super.damageEntity(source, damageAmount);
 	}
 
-	private static final EquipmentSlotType[] copyList = {EquipmentSlotType.HEAD, EquipmentSlotType.CHEST, EquipmentSlotType.LEGS,
-			EquipmentSlotType.FEET, EquipmentSlotType.MAINHAND, EquipmentSlotType.OFFHAND};
-
 	@Override
 	public void onInfect(Entity mob)
 	{
@@ -588,18 +586,18 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 		{
 			MobEntity from = (MobEntity) mob;
 			ItemStack stack;
-			for (int i = 0; i < copyList.length; ++i)
+			for (EquipmentSlotType slot : EquipmentSlotType.values())
 			{
-				EquipmentSlotType slot = copyList[i];
 				stack = from.getItemStackFromSlot(slot);
 				newmob.setItemStackToSlot(slot, stack.copy());
 				newmob.setDropChance(slot, getDropChance(slot));
 				stack.setCount(0);
 			}
+			newmob.setCanPickUpLoot(from.canPickUpLoot());
 			if (from.isNoDespawnRequired())
 				newmob.enablePersistence();
-		    newmob.setNoAI(from.isAIDisabled());
-		    newmob.setRevengeTarget(from.getRevengeTarget());
+			newmob.setNoAI(from.isAIDisabled());
+			newmob.setRevengeTarget(from.getRevengeTarget());
 			newmob.rotationYawHead = from.rotationYawHead;
 			newmob.renderYawOffset = from.rotationYawHead;
 		}
@@ -613,7 +611,7 @@ public class NastySkeletonEntity extends AbstractSkeletonEntity implements IHasV
 			newmob.setMotion(mob.getMotion());
 
 		// SoundEvents.ENTITY_ZOMBIE_VILLAGER_CONVERTED
-	    world.playEvent((PlayerEntity)null, 1027, newmob.func_233580_cy_(), 0);
+		world.playEvent((PlayerEntity)null, 1027, newmob.func_233580_cy_(), 0);
 		world.addEntity(newmob);
 		mob.remove();
 	}

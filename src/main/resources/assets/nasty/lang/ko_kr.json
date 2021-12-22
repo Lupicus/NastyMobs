@@ -1,0 +1,17 @@
+{
+	"item.nasty.skeleton_spawn_egg": "더러운 스켈레톤 생성 알",
+	"item.nasty.wolf_spawn_egg": "더러운 늑대 산란 알",
+	"item.nasty.explosive_arrow": "폭발성 화살",
+	"item.nasty.magic_arrow": "매직 애로우",
+	"entity.nasty.skeleton": "더러운 해골",
+	"entity.nasty.wolf": "더러운 늑대",
+	"subtitles.nasty.item.armor.drop": "기어 드롭",
+	"advancements.adventure.nasty.arrow_hit.title": "시내에서!",
+	"advancements.adventure.nasty.arrow_hit.description": "흉악한 해골에 맞아",
+	"advancements.adventure.nasty.kill_a_mob.title": "달콤한 복수",
+	"advancements.adventure.nasty.kill_a_mob.description": "더러운 해골 처치",
+	"advancements.adventure.nasty.kill_by_bow.title": "느낌이 어떤가요!",
+	"advancements.adventure.nasty.kill_by_bow.description": "활과 화살로 더러운 해골 죽이기",
+	"advancements.adventure.nasty.kill_all_mobs.title": "불쾌한 살인자",
+	"advancements.adventure.nasty.kill_all_mobs.description": "각 유형의 더러운 해골 처치"
+}

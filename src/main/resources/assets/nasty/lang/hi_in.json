@@ -1,0 +1,17 @@
+{
+	"item.nasty.skeleton_spawn_egg": "गंदा कंकाल स्पॉन अंडा",
+	"item.nasty.wolf_spawn_egg": "गंदा वुल्फ स्पॉन अंडा",
+	"item.nasty.explosive_arrow": "विस्फोटक तीर",
+	"item.nasty.magic_arrow": "मैजिक एरो",
+	"entity.nasty.skeleton": "गंदा कंकाल",
+	"entity.nasty.wolf": "गंदा भेड़िया",
+	"subtitles.nasty.item.armor.drop": "गियर गिरता है",
+	"advancements.adventure.nasty.arrow_hit.title": "रास्ते से डाउनटाउन!",
+	"advancements.adventure.nasty.arrow_hit.description": "गंदा कंकाल द्वारा मारा",
+	"advancements.adventure.nasty.kill_a_mob.title": "मीठा बदला",
+	"advancements.adventure.nasty.kill_a_mob.description": "एक बुरा कंकाल को मार डालो",
+	"advancements.adventure.nasty.kill_by_bow.title": "यह कैसी लगता है!",
+	"advancements.adventure.nasty.kill_by_bow.description": "एक धनुष और तीर के साथ एक बुरा कंकाल को मार डालो",
+	"advancements.adventure.nasty.kill_all_mobs.title": "गंदा किलर",
+	"advancements.adventure.nasty.kill_all_mobs.description": "प्रत्येक प्रकार के नॉटी स्केलेटन को मारें"
+}

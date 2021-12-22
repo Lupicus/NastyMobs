@@ -24,6 +24,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.Explosion;
@@ -113,13 +114,13 @@ public class ExplosiveArrowEntity extends ArrowEntity
 	@Override
 	protected void onEntityHit(EntityRayTraceResult raytraceResultIn)
 	{
-	    Entity entity = raytraceResultIn.getEntity();
-	    LivingEntity le = null;
-	    boolean blocking = false;
+		Entity entity = raytraceResultIn.getEntity();
+		LivingEntity le = null;
+		boolean blocking = false;
 		EquipmentSlotType slot = EquipmentSlotType.OFFHAND;
 		double rot = 0;
-	    if (MyConfig.explosiveArrowOnArmor && entity instanceof LivingEntity)
-	    {
+		if (MyConfig.explosiveArrowOnArmor && entity instanceof LivingEntity)
+		{
 			le = (LivingEntity) entity;
 			if (MyConfig.explosiveArrowOnShield)
 			{
@@ -131,7 +132,7 @@ public class ExplosiveArrowEntity extends ArrowEntity
 					slot = EquipmentSlotType.MAINHAND;
 			}
 			rot = rotationYaw;
-	    }
+		}
 		super.onEntityHit(raytraceResultIn);
 		if (blocking || (le != null && rot == rotationYaw)) {
 			// if blocking with shield then it is dropped
@@ -140,16 +141,15 @@ public class ExplosiveArrowEntity extends ArrowEntity
 				slot = EquipmentSlotType.fromSlotTypeAndIndex(Group.ARMOR, rand.nextInt(4));
 			ItemStack stack = le.getItemStackFromSlot(slot);
 			if (!stack.isEmpty()) {
-				double d0 = (double) (rand.nextFloat() * 0.5F) + 0.25D;
-				double d2 = (double) (rand.nextFloat() * 0.5F) + 0.25D;
-				BlockPos pos = le.func_233580_cy_(); // getPosition
-				ItemEntity itementity = new ItemEntity(le.world, pos.getX() + d0, pos.getY(), pos.getZ() + d2, stack);
+				le.setItemStackToSlot(slot, ItemStack.EMPTY);
+				Vector3d pos = le.getPositionVec();
+				ItemEntity itementity = new ItemEntity(le.world, pos.x, pos.y + 1.0, pos.z, stack);
 				itementity.setDefaultPickupDelay();
-				if (le.world.addEntity(itementity))
-				{
-					le.world.playSound(null, le.getPosX(), le.getPosY(), le.getPosZ(), ModSounds.ARMOR_DROP, le.getSoundCategory(), 1.0F, 1.0F);
-					le.setItemStackToSlot(slot, ItemStack.EMPTY);
-				}
+				float f = rand.nextFloat() * 0.5F;
+				float f1 = rand.nextFloat() * ((float)Math.PI * 2F);
+				itementity.setMotion((double)(-MathHelper.sin(f1) * f), 0.2, (double)(MathHelper.cos(f1) * f));
+				le.world.addEntity(itementity);
+				le.world.playSound(null, le.getPosX(), le.getPosY(), le.getPosZ(), ModSounds.ARMOR_DROP, le.getSoundCategory(), 1.0F, 1.0F);
 			}
 			if (isAlive())
 				remove();

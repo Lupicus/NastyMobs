@@ -156,8 +156,7 @@ public class MyConfig
 
 	private static String[] extract(String value)
 	{
-		String[] ret = value.split(";");
-		return ret;
+		return value.isEmpty() ? new String[0] : value.split(";");
 	}
 
 	public static class Common
@@ -194,6 +193,7 @@ public class MyConfig
 		{
 			String baseTrans = Main.MODID + ".config.";
 			String sectionTrans;
+
 			builder.push("Nasty Skeleton");
 			sectionTrans = baseTrans + "skeleton.";
 			minHealth = builder

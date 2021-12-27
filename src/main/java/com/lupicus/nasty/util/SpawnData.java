@@ -7,7 +7,7 @@ import com.lupicus.nasty.entity.ModEntities;
 
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.biome.MobSpawnSettings.SpawnerData;
-import net.minecraftforge.common.world.MobSpawnInfoBuilder;
+import net.minecraftforge.common.world.MobSpawnSettingsBuilder;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.event.world.StructureSpawnListGatherEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -18,7 +18,7 @@ public class SpawnData
 	public static void onBiome(BiomeLoadingEvent event)
 	{
 		// copy spawn for biomes
-		MobSpawnInfoBuilder builder = event.getSpawns();
+		MobSpawnSettingsBuilder builder = event.getSpawns();
 		List<EntityType<?>> mobs = new ArrayList<>();
 		List<SpawnerData> list = new ArrayList<>();
 		ModEntities.getBiomeSpawnData(mobs, list);

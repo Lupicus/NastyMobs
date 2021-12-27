@@ -57,6 +57,7 @@ public class MyConfig
 	public static int spawnBiome;
 	public static int spawnFeature;
 	public static int spawnDungeon;
+	public static int spawnBlockLight;
 	public static int spawnLightLevel;
 	public static boolean spawnTempBased;
 	public static int[] spawnVariantWeights;
@@ -92,6 +93,7 @@ public class MyConfig
 		spawnBiome = COMMON.spawnBiome.get();
 		spawnFeature = COMMON.spawnFeature.get();
 		spawnDungeon = COMMON.spawnDungeon.get();
+		spawnBlockLight = COMMON.spawnBlockLight.get();
 		spawnLightLevel = COMMON.spawnLightLevel.get();
 		explosiveArrowOnArmor = COMMON.explosiveArrowOnArmor.get();
 		explosiveArrowOnBlock = COMMON.explosiveArrowOnBlock.get();
@@ -186,6 +188,7 @@ public class MyConfig
 		public final IntValue spawnBiome;
 		public final IntValue spawnFeature;
 		public final IntValue spawnDungeon;
+		public final IntValue spawnBlockLight;
 		public final IntValue spawnLightLevel;
 		public final BooleanValue spawnTempBased;
 		public final ConfigValue<String> spawnVariantWeights;
@@ -195,7 +198,7 @@ public class MyConfig
 		public Common(ForgeConfigSpec.Builder builder)
 		{
 			List<String> biomeAdjList = Arrays.asList("minecraft:plains,*,-0.2,0.2", "minecraft:swamp,0,0.2,0.0",
-					"minecraft:swamp,*,0.1,-0.1", "minecraft:badlands,*,0.3,0.3", "minecraft:dark_forest_hills,*,0.3,0.3");
+					"minecraft:swamp,*,0.1,-0.1", "minecraft:badlands,*,0.3,0.3", "minecraft:dark_forest,*,0.3,0.3");
 			String baseTrans = Main.MODID + ".config.";
 			String sectionTrans;
 
@@ -249,6 +252,10 @@ public class MyConfig
 					.comment("Spawn in Dungeon weight")
 					.translation(sectionTrans + "spawn_dungeon")
 					.defineInRange("SpawnDungeon", 100, 0, 200);
+			spawnBlockLight = builder
+					.comment("Spawn block light level (use 0 to be same as normal skeletons and use >= SpawnLightLevel for 1.16)")
+					.translation(sectionTrans + "spawn_block_light")
+					.defineInRange("SpawnBlockLight", 0, 0, 15);
 			spawnLightLevel = builder
 					.comment("Spawn light level (use 7 to be same as normal skeletons)")
 					.translation(sectionTrans + "spawn_light_level")

@@ -228,6 +228,7 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 		Biome biome = worldIn.getBiome(pos);
 		if (MyConfig.spawnTempBased && (reason == MobSpawnType.NATURAL || reason == MobSpawnType.CHUNK_GENERATION))
 		{
+			@SuppressWarnings("deprecation")
 			float temp = biome.getTemperature(pos);
 			int subtype = (singleVariant) ? defVariant : randomTempBased(temp);
 			entityData.set(SUB_TYPE, subtype);
@@ -401,6 +402,8 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 	public static boolean isDarkEnoughToSpawn(ServerLevelAccessor worldIn, BlockPos pos, Random randomIn)
 	{
 		if (worldIn.getBrightness(LightLayer.SKY, pos) > randomIn.nextInt(32))
+			return false;
+		if (worldIn.getBrightness(LightLayer.BLOCK, pos) > MyConfig.spawnBlockLight)
 			return false;
 		int i = worldIn.getLevel().isThundering() ? worldIn.getMaxLocalRawBrightness(pos, 10)
 				: worldIn.getMaxLocalRawBrightness(pos);

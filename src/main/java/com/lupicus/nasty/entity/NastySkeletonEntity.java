@@ -4,12 +4,16 @@ import java.util.HashMap;
 import java.util.Random;
 import javax.annotation.Nullable;
 
+import org.slf4j.Logger;
+
 import com.lupicus.nasty.config.MyConfig;
 import com.lupicus.nasty.entity.ai.controller.JumpMovementController;
 import com.lupicus.nasty.entity.ai.goal.SpreadVirusGoal;
 import com.lupicus.nasty.item.ModItems;
 import com.lupicus.nasty.pathfinding.JumpPathNavigator;
 import com.lupicus.nasty.util.ArrowHelper;
+
+import com.mojang.logging.LogUtils;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
@@ -72,6 +76,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 {
+	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final int NVARIANTS = 6;
 	private static int defVariant = 0;
 	private static boolean singleVariant = false;
@@ -225,7 +230,7 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 			@Nullable SpawnGroupData spawnDataIn, @Nullable CompoundTag dataTag)
 	{
 		BlockPos pos = blockPosition();
-		Biome biome = worldIn.getBiome(pos);
+		Biome biome = worldIn.getBiome(pos).value();
 		if (MyConfig.spawnTempBased && (reason == MobSpawnType.NATURAL || reason == MobSpawnType.CHUNK_GENERATION))
 		{
 			@SuppressWarnings("deprecation")

@@ -1,0 +1,17 @@
+{
+	"item.nasty.skeleton_spawn_egg": "Неприємне яйце-нерест скелета",
+	"item.nasty.wolf_spawn_egg": "Яйця неприємного вовка",
+	"item.nasty.explosive_arrow": "Вибухова стрілка",
+	"item.nasty.magic_arrow": "Чарівна стріла",
+	"entity.nasty.skeleton": "Неприємний скелет",
+	"entity.nasty.wolf": "Гадкий Вовк",
+	"subtitles.nasty.item.armor.drop": "Зубні краплі",
+	"advancements.adventure.nasty.arrow_hit.title": "З дороги до центру міста!",
+	"advancements.adventure.nasty.arrow_hit.description": "Попадання Неприємного Скелета",
+	"advancements.adventure.nasty.kill_a_mob.title": "Солодка помста",
+	"advancements.adventure.nasty.kill_a_mob.description": "Убити неприємного скелета",
+	"advancements.adventure.nasty.kill_by_bow.title": "Яке це!",
+	"advancements.adventure.nasty.kill_by_bow.description": "Убити неприємного скелета луком і стрілами",
+	"advancements.adventure.nasty.kill_all_mobs.title": "Неприємний вбивця",
+	"advancements.adventure.nasty.kill_all_mobs.description": "Убийте кожен тип Неприємного Скелета"
+}

@@ -1,0 +1,17 @@
+{
+	"item.nasty.skeleton_spawn_egg": "Жуткий скелет",
+	"item.nasty.wolf_spawn_egg": "Жуткий волк",
+	"item.nasty.explosive_arrow": "Взрывчатая стрела",
+	"item.nasty.magic_arrow": "Магическая стрела",
+	"entity.nasty.skeleton": "Жуткий скелет",
+	"entity.nasty.wolf": "Жуткий волк",
+	"subtitles.nasty.item.armor.drop": "Выпавшее снаряжение",
+	"advancements.adventure.nasty.arrow_hit.title": "Дорога от центра!",
+	"advancements.adventure.nasty.arrow_hit.description": "Бейте за счёт Жуткого скелета",
+	"advancements.adventure.nasty.kill_a_mob.title": "Сладкая месть",
+	"advancements.adventure.nasty.kill_a_mob.description": "Убейте Жуткого скелета",
+	"advancements.adventure.nasty.kill_by_bow.title": "Какого это!",
+	"advancements.adventure.nasty.kill_by_bow.description": "Убейте Жуткого скелета с помощью лука и стрелы",
+	"advancements.adventure.nasty.kill_all_mobs.title": "Жуткий убийца",
+	"advancements.adventure.nasty.kill_all_mobs.description": "Убейти каждый вид Жуткого скелета"
+}

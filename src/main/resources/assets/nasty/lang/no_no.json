@@ -1,0 +1,17 @@
+{
+	"item.nasty.skeleton_spawn_egg": "Ekkel skjelettgyteegg",
+	"item.nasty.wolf_spawn_egg": "Ekkel ulv gyte egg",
+	"item.nasty.explosive_arrow": "Eksplosiv pil",
+	"item.nasty.magic_arrow": "Magisk pil",
+	"entity.nasty.skeleton": "Ekkel skjelett",
+	"entity.nasty.wolf": "Ekkel ulv",
+	"subtitles.nasty.item.armor.drop": "Utstyr faller",
+	"advancements.adventure.nasty.arrow_hit.title": "Fra vei sentrum!",
+	"advancements.adventure.nasty.arrow_hit.description": "Truffet av et ekkel skjelett",
+	"advancements.adventure.nasty.kill_a_mob.title": "Hevnen er søt",
+	"advancements.adventure.nasty.kill_a_mob.description": "Drep et stygt skjelett",
+	"advancements.adventure.nasty.kill_by_bow.title": "Hvordan føles det!",
+	"advancements.adventure.nasty.kill_by_bow.description": "Drep et stygt skjelett med pil og bue",
+	"advancements.adventure.nasty.kill_all_mobs.title": "Ekkel morder",
+	"advancements.adventure.nasty.kill_all_mobs.description": "Drep hver type stygg skjelett"
+}

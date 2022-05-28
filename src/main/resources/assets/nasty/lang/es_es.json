@@ -1,0 +1,17 @@
+{
+	"item.nasty.skeleton_spawn_egg": "Huevo de desove de esqueleto desagradable",
+	"item.nasty.wolf_spawn_egg": "Huevo de desove de lobo desagradable",
+	"item.nasty.explosive_arrow": "Flecha explosiva",
+	"item.nasty.magic_arrow": "Flecha mágica",
+	"entity.nasty.skeleton": "Esqueleto desagradable",
+	"entity.nasty.wolf": "Lobo desagradable",
+	"subtitles.nasty.item.armor.drop": "Gotas de equipo",
+	"advancements.adventure.nasty.arrow_hit.title": "¡De camino al centro!",
+	"advancements.adventure.nasty.arrow_hit.description": "Golpeado por un esqueleto desagradable",
+	"advancements.adventure.nasty.kill_a_mob.title": "Dulce venganza",
+	"advancements.adventure.nasty.kill_a_mob.description": "Mata a un esqueleto desagradable",
+	"advancements.adventure.nasty.kill_by_bow.title": "¡Cómo se siente!",
+	"advancements.adventure.nasty.kill_by_bow.description": "Mata a un esqueleto desagradable con un arco y una flecha.",
+	"advancements.adventure.nasty.kill_all_mobs.title": "Asesino desagradable",
+	"advancements.adventure.nasty.kill_all_mobs.description": "Mata a cada tipo de esqueleto repugnante"
+}

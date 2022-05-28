@@ -1,0 +1,17 @@
+{
+	"item.nasty.skeleton_spawn_egg": "Böses Skelett-Brut-Ei",
+	"item.nasty.wolf_spawn_egg": "Böses Wolfsbrut-Ei",
+	"item.nasty.explosive_arrow": "Explosiver Pfeil",
+	"item.nasty.magic_arrow": "Magischer Pfeil",
+	"entity.nasty.skeleton": "Böses Skelett",
+	"entity.nasty.wolf": "Böser Wolf",
+	"subtitles.nasty.item.armor.drop": "Das Getriebe fällt ab",
+	"advancements.adventure.nasty.arrow_hit.title": "Vom Weg in die Innenstadt!",
+	"advancements.adventure.nasty.arrow_hit.description": "Von bösem Skelett getroffen",
+	"advancements.adventure.nasty.kill_a_mob.title": "Süße Rache",
+	"advancements.adventure.nasty.kill_a_mob.description": "Töte ein böses Skelett",
+	"advancements.adventure.nasty.kill_by_bow.title": "Wie fühlt es sich an!",
+	"advancements.adventure.nasty.kill_by_bow.description": "Töte ein böses Skelett mit Pfeil und Bogen",
+	"advancements.adventure.nasty.kill_all_mobs.title": "Böser Killer",
+	"advancements.adventure.nasty.kill_all_mobs.description": "Töte jede Art von bösem Skelett"
+}

@@ -1,0 +1,17 @@
+{
+	"item.nasty.skeleton_spawn_egg": "Uovo di spawn di scheletro cattivo",
+	"item.nasty.wolf_spawn_egg": "Uovo di spawn del lupo cattivo",
+	"item.nasty.explosive_arrow": "Freccia esplosiva",
+	"item.nasty.magic_arrow": "Freccia magica",
+	"entity.nasty.skeleton": "Scheletro cattivo",
+	"entity.nasty.wolf": "Brutto lupo",
+	"subtitles.nasty.item.armor.drop": "L'ingranaggio cade",
+	"advancements.adventure.nasty.arrow_hit.title": "Da modo Downtown!",
+	"advancements.adventure.nasty.arrow_hit.description": "Colpito da uno scheletro cattivo",
+	"advancements.adventure.nasty.kill_a_mob.title": "Dolce vendetta",
+	"advancements.adventure.nasty.kill_a_mob.description": "Uccidi uno scheletro cattivo",
+	"advancements.adventure.nasty.kill_by_bow.title": "Come ti fa sentire!",
+	"advancements.adventure.nasty.kill_by_bow.description": "Uccidi uno scheletro cattivo con arco e frecce",
+	"advancements.adventure.nasty.kill_all_mobs.title": "Brutto assassino",
+	"advancements.adventure.nasty.kill_all_mobs.description": "Uccidi ogni tipo di scheletro cattivo"
+}

@@ -1,0 +1,17 @@
+{
+	"item.nasty.skeleton_spawn_egg": "厄介なスケルトンスポーンエッグ",
+	"item.nasty.wolf_spawn_egg": "厄介なウルフスポーンエッグ",
+	"item.nasty.explosive_arrow": "爆発の矢",
+	"item.nasty.magic_arrow": "マジックアロー",
+	"entity.nasty.skeleton": "厄介なスケルトン",
+	"entity.nasty.wolf": "厄介なオオカミ",
+	"subtitles.nasty.item.armor.drop": "ギアドロップ",
+	"advancements.adventure.nasty.arrow_hit.title": "ダウンタウンから！",
+	"advancements.adventure.nasty.arrow_hit.description": "厄介なスケルトンに見舞われた",
+	"advancements.adventure.nasty.kill_a_mob.title": "甘い復讐",
+	"advancements.adventure.nasty.kill_a_mob.description": "厄介なスケルトンを殺す",
+	"advancements.adventure.nasty.kill_by_bow.title": "どんな感じですか！",
+	"advancements.adventure.nasty.kill_by_bow.description": "弓と矢で厄介なスケルトンを殺す",
+	"advancements.adventure.nasty.kill_all_mobs.title": "厄介なキラー",
+	"advancements.adventure.nasty.kill_all_mobs.description": "厄介なスケルトンの各タイプを殺す"
+}

@@ -1,0 +1,17 @@
+{
+	"item.nasty.skeleton_spawn_egg": "ไข่วางไข่โครงกระดูกที่น่ารังเกียจ",
+	"item.nasty.wolf_spawn_egg": "ไข่วางไข่หมาป่าที่น่ารังเกียจ",
+	"item.nasty.explosive_arrow": "ลูกศรระเบิด",
+	"item.nasty.magic_arrow": "ลูกศรวิเศษ",
+	"entity.nasty.skeleton": "โครงกระดูกที่น่ารังเกียจ",
+	"entity.nasty.wolf": "หมาป่าที่น่ารังเกียจ",
+	"subtitles.nasty.item.armor.drop": "เกียร์ลดลง",
+	"advancements.adventure.nasty.arrow_hit.title": "จากตัวเมือง!",
+	"advancements.adventure.nasty.arrow_hit.description": "โดนโครงกระดูกที่น่ารังเกียจ",
+	"advancements.adventure.nasty.kill_a_mob.title": "การแก้แค้นแสนหวาน",
+	"advancements.adventure.nasty.kill_a_mob.description": "ฆ่าโครงกระดูกที่น่ารังเกียจ",
+	"advancements.adventure.nasty.kill_by_bow.title": "รู้สึกยังไงบ้าง!",
+	"advancements.adventure.nasty.kill_by_bow.description": "ฆ่าโครงกระดูกที่น่ารังเกียจด้วยธนูและลูกศร",
+	"advancements.adventure.nasty.kill_all_mobs.title": "ฆาตกรที่น่ารังเกียจ",
+	"advancements.adventure.nasty.kill_all_mobs.description": "สังหาร โครงกระดูกที่น่ารังเกียจ แต่ละประเภท"
+}

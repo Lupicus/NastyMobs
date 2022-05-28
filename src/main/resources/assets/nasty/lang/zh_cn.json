@@ -1,0 +1,17 @@
+{
+	"item.nasty.skeleton_spawn_egg": "讨厌的骷髅虾卵",
+	"item.nasty.wolf_spawn_egg": "讨厌的狼产卵",
+	"item.nasty.explosive_arrow": "爆炸箭头",
+	"item.nasty.magic_arrow": "魔术箭",
+	"entity.nasty.skeleton": "讨厌的骷髅",
+	"entity.nasty.wolf": "讨厌的狼",
+	"subtitles.nasty.item.armor.drop": "齿轮掉落",
+	"advancements.adventure.nasty.arrow_hit.title": "从市区的方式！",
+	"advancements.adventure.nasty.arrow_hit.description": "被讨厌的骷髅击中",
+	"advancements.adventure.nasty.kill_a_mob.title": "甜蜜的复仇",
+	"advancements.adventure.nasty.kill_a_mob.description": "杀死一个讨厌的骷髅",
+	"advancements.adventure.nasty.kill_by_bow.title": "感觉怎么样！",
+	"advancements.adventure.nasty.kill_by_bow.description": "用弓箭杀死一个讨厌的骷髅",
+	"advancements.adventure.nasty.kill_all_mobs.title": "讨厌的杀手",
+	"advancements.adventure.nasty.kill_all_mobs.description": "杀死每种讨厌的骷髅"
+}

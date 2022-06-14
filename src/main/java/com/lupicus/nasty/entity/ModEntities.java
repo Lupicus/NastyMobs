@@ -29,13 +29,13 @@ public class ModEntities
 	{
 		String key = Main.MODID + ":" + name;
 		EntityType<T> type = builder.build(key);
-		type.setRegistryName(key);
 		return type;
 	}
 
 	public static void register(IForgeRegistry<EntityType<?>> forgeRegistry)
 	{
-		forgeRegistry.registerAll(NASTY_SKELETON, NASTY_WOLF);
+		forgeRegistry.register("skeleton", NASTY_SKELETON);
+		forgeRegistry.register("wolf", NASTY_WOLF);
 
 		SpawnPlacements.register(NASTY_SKELETON, SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, NastySkeletonEntity::checkSpawnRules);
 		SpawnPlacements.register(NASTY_WOLF, SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, NastyWolfEntity::checkSpawnRules);

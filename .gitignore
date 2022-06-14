@@ -1,11 +1,11 @@
 *.launch
+.classpath
+.gradle/
+.project
 .settings/
 bin/
 build/
-.gradle/
-.project
-.classpath
-run/
-old_stuff/
 libs/
 logs/
+old_stuff/
+run/

@@ -1,13 +1,12 @@
 package com.lupicus.nasty.entity;
 
-import java.util.Random;
-
 import com.lupicus.nasty.config.MyConfig;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -51,6 +50,7 @@ public class NastyWolfEntity extends Wolf implements Enemy // Monster
 	protected void registerGoals()
 	{
 		this.goalSelector.addGoal(1, new FloatGoal(this));
+		//this.goalSelector.addGoal(1, new Wolf.WolfPanicGoal(1.5D));
 		//this.goalSelector.addGoal(2, new SitWhenOrderedToGoal(this));
 		//this.goalSelector.addGoal(3, new Wolf.WolfAvoidEntityGoal<>(this, Llama.class, 24.0F, 1.5D, 1.5D));
 		this.goalSelector.addGoal(4, new LeapAtTargetGoal(this, 0.4F));
@@ -94,16 +94,15 @@ public class NastyWolfEntity extends Wolf implements Enemy // Monster
 	}
 
 	public static boolean checkSpawnRules(EntityType<? extends NastyWolfEntity> type, ServerLevelAccessor worldIn, MobSpawnType reason,
-			BlockPos pos, Random randomIn)
+			BlockPos pos, RandomSource randomIn)
 	{
 		return worldIn.getDifficulty() != Difficulty.PEACEFUL && Monster.isDarkEnoughToSpawn(worldIn, pos, randomIn) && checkMobSpawnRules(type, worldIn, reason, pos, randomIn);
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public float getWalkTargetValue(BlockPos pos, LevelReader worldIn)
 	{
-		return 0.5F - worldIn.getBrightness(pos);
+		return -worldIn.getPathfindingCostFromLightLevels(pos);
 	}
 
 	@Override

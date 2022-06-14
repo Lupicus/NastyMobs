@@ -1,20 +1,21 @@
 package com.lupicus.nasty;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.lupicus.nasty.config.MyConfig;
 import com.lupicus.nasty.entity.ModEntities;
 import com.lupicus.nasty.item.ModItems;
 import com.lupicus.nasty.sound.ModSounds;
+import com.lupicus.nasty.util.ModBiomeModifier;
+import com.lupicus.nasty.util.ModStructureModifier;
 import com.lupicus.nasty.util.SpawnData;
 
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.Item;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.EntityRenderersEvent.RegisterRenderers;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
@@ -26,6 +27,8 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegisterEvent;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(Main.MODID)
@@ -61,29 +64,21 @@ public class Main
     public static class ModEvents
     {
     	@SubscribeEvent
-    	public static void onItemsRegistry(final RegistryEvent.Register<Item> event)
-    	{
-    		ModItems.register(event.getRegistry());
-    	}
-
-        @OnlyIn(Dist.CLIENT)
-        @SubscribeEvent
-        public static void onColorsRegistry(final ColorHandlerEvent.Item event)
-        {
-        	ModItems.register(event.getItemColors());
-        }
-
-        @SubscribeEvent
-        public static void onEntityRegistry(final RegistryEvent.Register<EntityType<?>> event)
-        {
-        	ModEntities.register(event.getRegistry());
-        }
-
-        @SubscribeEvent
-        public static void onSoundRegistry(final RegistryEvent.Register<SoundEvent> event)
-        {
-        	ModSounds.register(event.getRegistry());
-        }
+	    public static void onRegister(final RegisterEvent event)
+	    {
+	    	@NotNull
+			ResourceKey<? extends Registry<?>> key = event.getRegistryKey();
+	    	if (key.equals(ForgeRegistries.Keys.ITEMS))
+	    		ModItems.register(event.getForgeRegistry());
+	    	else if (key.equals(ForgeRegistries.Keys.ENTITY_TYPES))
+	    		ModEntities.register(event.getForgeRegistry());
+		    else if (key.equals(ForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS))
+		    	ModBiomeModifier.register(event.getForgeRegistry());
+		    else if (key.equals(ForgeRegistries.Keys.STRUCTURE_MODIFIER_SERIALIZERS))
+		    	ModStructureModifier.register(event.getForgeRegistry());
+		    else if (key.equals(ForgeRegistries.Keys.SOUND_EVENTS))
+	    		ModSounds.register(event.getForgeRegistry());
+	    }
 
         @SubscribeEvent
         public static void onRenderers(final RegisterRenderers event)

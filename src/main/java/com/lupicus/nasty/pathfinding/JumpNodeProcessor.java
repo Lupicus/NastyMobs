@@ -23,7 +23,7 @@ public class JumpNodeProcessor extends WalkNodeEvaluator
 	public void prepare(PathNavigationRegion region, Mob mobIn) {
 		super.prepare(region, mobIn);
 		jumpHeight = 1.125;
-		adjusted_j = Mth.floor(Math.max(1.0F, this.mob.maxUpStep));
+		adjusted_j = Mth.floor(Math.max(1.0F, this.mob.getStepHeight()));
 		MobEffectInstance effect = mobIn.getEffect(MobEffects.JUMP);
 		if (effect != null)
 		{
@@ -119,12 +119,10 @@ public class JumpNodeProcessor extends WalkNodeEvaluator
 			float f = this.mob.getPathfindingMalus(pathnodetype);
 			double d1 = (double) this.mob.getBbWidth() / 2.0D;
 			if (f >= 0.0F) {
-				node = this.getNode(x, y, z);
-				node.type = pathnodetype;
-				node.costMalus = Math.max(node.costMalus, f);
+				node = this.getNodeAndUpdateCostToMax(x, y, z, pathnodetype, f);
 			}
 
-			if (nodeTypeIn == BlockPathTypes.FENCE && node != null && node.costMalus >= 0.0F
+			if (doesBlockHavePartialCollision(nodeTypeIn) && node != null && node.costMalus >= 0.0F
 					&& !this.canReachWithoutCollision(node)) {
 				node = null;
 			}
@@ -163,9 +161,7 @@ public class JumpNodeProcessor extends WalkNodeEvaluator
 							return node;
 						}
 
-						node = this.getNode(x, y, z);
-						node.type = pathnodetype;
-						node.costMalus = Math.max(node.costMalus, this.mob.getPathfindingMalus(pathnodetype));
+						node = this.getNodeAndUpdateCostToMax(x, y, z, pathnodetype, this.mob.getPathfindingMalus(pathnodetype));
 					}
 				}
 
@@ -176,42 +172,33 @@ public class JumpNodeProcessor extends WalkNodeEvaluator
 					while (pathnodetype == BlockPathTypes.OPEN) {
 						--y;
 						if (y < this.mob.level.getMinBuildHeight()) {
-							Node node3 = this.getNode(x, i, z);
-							node3.type = BlockPathTypes.BLOCKED;
-							node3.costMalus = -1.0F;
-							return node3;
+							return this.getBlockedNode(x, i, z);
 						}
 
 						if (j++ >= this.mob.getMaxFallDistance()) {
-							Node node2 = this.getNode(x, y, z);
-							node2.type = BlockPathTypes.BLOCKED;
-							node2.costMalus = -1.0F;
-							return node2;
+							return this.getBlockedNode(x, y, z);
 						}
 
 						pathnodetype = this.getCachedBlockType(this.mob, x, y, z);
 						f = this.mob.getPathfindingMalus(pathnodetype);
 						if (pathnodetype != BlockPathTypes.OPEN && f >= 0.0F) {
-							node = this.getNode(x, y, z);
-							node.type = pathnodetype;
-							node.costMalus = Math.max(node.costMalus, f);
+							node = this.getNodeAndUpdateCostToMax(x, y, z, pathnodetype, f);
 							break;
 						}
 
 						if (f < 0.0F) {
-							Node node1 = this.getNode(x, y, z);
-							node1.type = BlockPathTypes.BLOCKED;
-							node1.costMalus = -1.0F;
-							return node1;
+							return this.getBlockedNode(x, y, z);
 						}
 					}
 				}
 
-				if (pathnodetype == BlockPathTypes.FENCE) {
+				if (doesBlockHavePartialCollision(pathnodetype)) {
 					node = this.getNode(x, y, z);
-					node.closed = true;
-					node.type = pathnodetype;
-					node.costMalus = pathnodetype.getMalus();
+					if (node != null) {
+						node.closed = true;
+						node.type = pathnodetype;
+						node.costMalus = pathnodetype.getMalus();
+					}
 				}
 			}
 

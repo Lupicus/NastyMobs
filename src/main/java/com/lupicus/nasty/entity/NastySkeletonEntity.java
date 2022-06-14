@@ -26,6 +26,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
@@ -416,7 +417,7 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 	}
 
 	public static boolean checkSpawnRules(EntityType<? extends NastySkeletonEntity> type, ServerLevelAccessor worldIn, MobSpawnType reason,
-			BlockPos pos, Random randomIn)
+			BlockPos pos, RandomSource randomIn)
 	{
 		return worldIn.getDifficulty() != Difficulty.PEACEFUL && isDarkEnoughToSpawn(worldIn, pos, randomIn) && checkMobSpawnRules(type, worldIn, reason, pos, randomIn);
 	}
@@ -430,9 +431,9 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 	}
 
 	@Override
-	protected void populateDefaultEquipmentSlots(DifficultyInstance difficulty)
+	protected void populateDefaultEquipmentSlots(RandomSource randomIn, DifficultyInstance difficulty)
 	{
-		super.populateDefaultEquipmentSlots(difficulty);
+		super.populateDefaultEquipmentSlots(randomIn, difficulty);
 
 		ItemStack stack = getItemBySlot(EquipmentSlot.HEAD);
 		if (stack.isEmpty() || stack.getItem() == Items.LEATHER_HELMET)

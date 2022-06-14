@@ -106,7 +106,7 @@ public class MyConfig
 		virusChance2 = (float) COMMON.virusChance2.get().doubleValue();
 		spawnTempBased = COMMON.spawnTempBased.get();
 		spawnVariantWeights = extract(NastySkeletonEntity.NVARIANTS, COMMON.spawnVariantWeights.get());
-		biomeAdjustments = extract(COMMON.biomeAdjustments.get());
+		biomeAdjustments = toArray(COMMON.biomeAdjustments.get());
 		virusMode2 = COMMON.virusMode2.get();
 		NastySkeletonEntity.configUpdate();
 	}
@@ -160,9 +160,14 @@ public class MyConfig
 		return ret;
 	}
 
-	private static String[] extract(List<? extends String> value)
+	private static String[] toArray(List<? extends String> value)
 	{
-		return value.toArray(new String[value.size()]);
+		return isEmpty(value) ? new String[0] : value.toArray(new String[value.size()]);
+	}
+
+	private static boolean isEmpty(List<? extends String> value)
+	{
+		return value.isEmpty() || (value.size() == 1 && value.get(0).isEmpty());
 	}
 
 	public static class Common

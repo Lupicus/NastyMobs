@@ -23,6 +23,7 @@ import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
 import net.minecraft.entity.ai.goal.NonTamedTargetGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WaterAvoidingRandomWalkingGoal;
+import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.WolfEntity;
@@ -30,6 +31,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.Difficulty;
@@ -38,7 +40,7 @@ import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 
-public class NastyWolfEntity extends WolfEntity // MonsterEntity
+public class NastyWolfEntity extends WolfEntity implements IMob // MonsterEntity
 {
 	public NastyWolfEntity(EntityType<? extends WolfEntity> type, World worldIn)
 	{
@@ -83,6 +85,12 @@ public class NastyWolfEntity extends WolfEntity // MonsterEntity
 	public CreatureAttribute getCreatureAttribute()
 	{
 		return CreatureAttribute.UNDEAD;
+	}
+
+	@Override
+	public SoundCategory getSoundCategory()
+	{
+		return SoundCategory.HOSTILE;
 	}
 
 	public static boolean canSpawn(EntityType<? extends NastyWolfEntity> type, IServerWorld worldIn, SpawnReason reason,

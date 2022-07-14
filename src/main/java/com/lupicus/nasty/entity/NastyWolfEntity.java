@@ -7,6 +7,7 @@ import com.lupicus.nasty.config.MyConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -31,6 +32,7 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.Wolf;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -38,7 +40,7 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.Vec3;
 
-public class NastyWolfEntity extends Wolf // Monster
+public class NastyWolfEntity extends Wolf implements Enemy // Monster
 {
 	public NastyWolfEntity(EntityType<? extends Wolf> type, Level worldIn)
 	{
@@ -83,6 +85,12 @@ public class NastyWolfEntity extends Wolf // Monster
 	public MobType getMobType()
 	{
 		return MobType.UNDEAD;
+	}
+
+	@Override
+	public SoundSource getSoundSource()
+	{
+		return SoundSource.HOSTILE;
 	}
 
 	public static boolean checkSpawnRules(EntityType<? extends NastyWolfEntity> type, ServerLevelAccessor worldIn, MobSpawnType reason,

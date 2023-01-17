@@ -60,8 +60,8 @@ public class ExplosiveArrowEntity extends Arrow
 		{
 			BlockHitResult result = (BlockHitResult) raytraceResultIn;
 			target = result.getBlockPos();
-			//world.createExplosion(this, target.getX()+0.5, target.getY()+0.5, target.getZ()+0.5, 0.5F, Explosion.BlockInteraction.BREAK);
-			createExplosion(target.getX()+0.5, target.getY()+0.5, target.getZ()+0.5, 0.5F, Explosion.BlockInteraction.BREAK);
+			//world.createExplosion(this, target.getX()+0.5, target.getY()+0.5, target.getZ()+0.5, 0.5F, Explosion.BlockInteraction.DESTROY);
+			createExplosion(target.getX()+0.5, target.getY()+0.5, target.getZ()+0.5, 0.5F, Explosion.BlockInteraction.DESTROY);
 			this.discard();
 		}
 	}
@@ -86,7 +86,7 @@ public class ExplosiveArrowEntity extends Arrow
 
 		e.explode();
 		e.finalizeExplosion(false);
-		if (mode == Explosion.BlockInteraction.NONE)
+		if (mode == Explosion.BlockInteraction.KEEP)
 			e.clearToBlow();
 
 		for (ServerPlayer serverplayerentity : world.players())

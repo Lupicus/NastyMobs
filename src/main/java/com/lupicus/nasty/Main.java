@@ -16,6 +16,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.EntityRenderersEvent.RegisterRenderers;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
@@ -60,7 +61,7 @@ public class Main
 	{
 	}
 
-    @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
+    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class ModEvents
     {
     	@SubscribeEvent
@@ -80,7 +81,13 @@ public class Main
 	    		ModSounds.register(event.getForgeRegistry());
 	    }
 
-        @SubscribeEvent
+    	@SubscribeEvent
+    	public static void onCreativeTab(CreativeModeTabEvent.BuildContents event)
+    	{
+    		ModItems.setupTabs(event);
+    	}
+
+    	@SubscribeEvent
         public static void onRenderers(final RegisterRenderers event)
         {
         	ModEntities.setupClient(event);

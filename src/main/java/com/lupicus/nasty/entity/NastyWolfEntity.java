@@ -191,6 +191,8 @@ public class NastyWolfEntity extends Wolf implements Enemy // Monster
 			mob.setDeltaMovement(0, 0, 0);
 
 		NastyWolfEntity newmob = ModEntities.NASTY_WOLF.create(world);
+		if (newmob == null)
+			return;
 		if (mob.hasCustomName())
 		{
 			newmob.setCustomName(mob.getCustomName());

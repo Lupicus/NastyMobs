@@ -9,7 +9,7 @@ import net.minecraft.core.dispenser.AbstractProjectileDispenseBehavior;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Item.Properties;
 import net.minecraft.world.item.ItemStack;
@@ -17,14 +17,15 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraftforge.common.ForgeSpawnEggItem;
+import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
 public class ModItems
 {
-	public static final Item NASTY_SKELETON_SPAWN_EGG = new ForgeSpawnEggItem(() -> ModEntities.NASTY_SKELETON, 0xD7D3D3, 0x006000, new Properties().tab(CreativeModeTab.TAB_MISC));
-	public static final Item NASTY_WOLF_SPAWN_EGG = new ForgeSpawnEggItem(() -> ModEntities.NASTY_WOLF, 0xC1C1C1, 0x008000, new Properties().tab(CreativeModeTab.TAB_MISC));
-	public static final Item EXPLOSIVE_ARROW = new ExplosiveArrowItem(new Properties().tab(CreativeModeTab.TAB_COMBAT).rarity(Rarity.RARE));
-	public static final Item MAGIC_ARROW = new MagicArrowItem(new Properties().tab(CreativeModeTab.TAB_COMBAT).rarity(Rarity.RARE));
+	public static final Item NASTY_SKELETON_SPAWN_EGG = new ForgeSpawnEggItem(() -> ModEntities.NASTY_SKELETON, 0xD7D3D3, 0x006000, new Properties());
+	public static final Item NASTY_WOLF_SPAWN_EGG = new ForgeSpawnEggItem(() -> ModEntities.NASTY_WOLF, 0xC1C1C1, 0x008000, new Properties());
+	public static final Item EXPLOSIVE_ARROW = new ExplosiveArrowItem(new Properties().rarity(Rarity.RARE));
+	public static final Item MAGIC_ARROW = new MagicArrowItem(new Properties().rarity(Rarity.RARE));
 
 	public static void register(IForgeRegistry<Item> forgeRegistry)
 	{
@@ -52,5 +53,19 @@ public class ModItems
 				return arrowentity;
 			}
 		});
+	}
+
+	public static void setupTabs(CreativeModeTabEvent.BuildContents event)
+	{
+		if (event.getTab() == CreativeModeTabs.COMBAT)
+		{
+			event.accept(EXPLOSIVE_ARROW);
+			event.accept(MAGIC_ARROW);
+		}
+		else if (event.getTab() == CreativeModeTabs.SPAWN_EGGS)
+		{
+			event.accept(NASTY_SKELETON_SPAWN_EGG);
+			event.accept(NASTY_WOLF_SPAWN_EGG);
+		}
 	}
 }

@@ -32,6 +32,7 @@ public class ModEntities
 		return type;
 	}
 
+	@SuppressWarnings("deprecation")
 	public static void register(IForgeRegistry<EntityType<?>> forgeRegistry)
 	{
 		forgeRegistry.register("skeleton", NASTY_SKELETON);

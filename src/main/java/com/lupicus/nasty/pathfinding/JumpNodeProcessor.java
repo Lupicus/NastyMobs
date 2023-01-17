@@ -130,7 +130,7 @@ public class JumpNodeProcessor extends WalkNodeEvaluator
 			if (pathnodetype != BlockPathTypes.WALKABLE
 					&& (!this.isAmphibious() || pathnodetype != BlockPathTypes.WATER)) {
 				if ((node == null || node.costMalus < 0.0F) && stepHeight > 0
-						&& pathnodetype != BlockPathTypes.FENCE && pathnodetype != BlockPathTypes.UNPASSABLE_RAIL
+						&& (pathnodetype != BlockPathTypes.FENCE || this.canWalkOverFences()) && pathnodetype != BlockPathTypes.UNPASSABLE_RAIL
 						&& pathnodetype != BlockPathTypes.TRAPDOOR && pathnodetype != BlockPathTypes.POWDER_SNOW) {
 					node = this.findAcceptedNode(x, y + 1, z, stepHeight - 1, groundYIn, facing, nodeTypeIn);
 					if (node != null
@@ -139,8 +139,8 @@ public class JumpNodeProcessor extends WalkNodeEvaluator
 						double d2 = (double) (x - facing.getStepX()) + 0.5D;
 						double d3 = (double) (z - facing.getStepZ()) + 0.5D;
 						AABB axisalignedbb = new AABB(d2 - d1,
-								getFloorLevel(this.level, blockpos$mutable.set(d2, (double) (y + 1), d3)) + 0.001D, d3 - d1,
-								d2 + d1, (double) this.mob.getBbHeight() + getFloorLevel(this.level,
+								getFloorLevel(blockpos$mutable.set(d2, (double) (y + 1), d3)) + 0.001D, d3 - d1,
+								d2 + d1, (double) this.mob.getBbHeight() + getFloorLevel(
 										blockpos$mutable.set(node.x, node.y, node.z)) - 0.002D,
 								d3 + d1);
 						if (this.hasCollisions(axisalignedbb)) {
@@ -192,13 +192,11 @@ public class JumpNodeProcessor extends WalkNodeEvaluator
 					}
 				}
 
-				if (doesBlockHavePartialCollision(pathnodetype)) {
+				if (doesBlockHavePartialCollision(pathnodetype) && node == null) {
 					node = this.getNode(x, y, z);
-					if (node != null) {
-						node.closed = true;
-						node.type = pathnodetype;
-						node.costMalus = pathnodetype.getMalus();
-					}
+					node.closed = true;
+					node.type = pathnodetype;
+					node.costMalus = pathnodetype.getMalus();
 				}
 			}
 

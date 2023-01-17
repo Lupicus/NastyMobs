@@ -16,7 +16,7 @@ import com.lupicus.nasty.util.ArrowHelper;
 import com.mojang.logging.LogUtils;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -73,7 +73,6 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.storage.LevelData;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 {
@@ -281,8 +280,7 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 		this.setHealth(getMaxHealth());
 
 		// adjust by biome
-//		String keyPrefix = biome.getRegistryName() + ":";
-		String keyPrefix = worldIn.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).getKey(biome) + ":";
+		String keyPrefix = worldIn.registryAccess().registryOrThrow(Registries.BIOME).getKey(biome) + ":";
 		AdjParms adj = biomeMap.get(keyPrefix + getSubType());
 		if (adj == null)
 			adj = biomeMap.get(keyPrefix + "*");
@@ -327,9 +325,10 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 					throw new Exception("bad number of fields");
 				String biomeName = fields[0].trim();
 				String variant = fields[1].trim();
-				Biome biome = ForgeRegistries.BIOMES.getValue(new ResourceLocation(biomeName));
-				if (biome == null)
-					throw new Exception("bad biome value");
+//				Biome biome = ForgeRegistries.BIOMES.getValue(new ResourceLocation(biomeName));
+//				if (biome == null)
+//					throw new Exception("bad biome value");
+				new ResourceLocation(biomeName);
 				if (!variant.equals("*"))
 				{
 					int j = Integer.parseInt(variant);
@@ -586,6 +585,8 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 			mob.setDeltaMovement(0, 0, 0);
 
 		NastySkeletonEntity newmob = ModEntities.NASTY_SKELETON.create(world);
+		if (newmob == null)
+			return;
 		if (mob.hasCustomName()) {
 			newmob.setCustomName(mob.getCustomName());
 			newmob.setCustomNameVisible(mob.isCustomNameVisible());

@@ -1,7 +1,6 @@
 package com.lupicus.nasty.entity;
 
-import java.util.List;
-
+import java.util.ArrayList;
 import javax.annotation.Nullable;
 
 import com.lupicus.nasty.config.MyConfig;
@@ -27,11 +26,13 @@ import net.minecraft.world.level.Explosion.BlockInteraction;
 import net.minecraft.world.level.ExplosionDamageCalculator;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.event.ForgeEventFactory;
 
 public class ExplosiveArrowEntity extends Arrow
 {
@@ -81,7 +82,7 @@ public class ExplosiveArrowEntity extends Arrow
 		ServerLevel world = (ServerLevel) this.level;
 		SimpleExplosion e = new SimpleExplosion(world, this, source, null, x, y, z, r, false, mode);
 
-		if (net.minecraftforge.event.ForgeEventFactory.onExplosionStart(world, e))
+		if (ForgeEventFactory.onExplosionStart(world, e))
 			return e;
 
 		e.explode();
@@ -188,7 +189,6 @@ public class ExplosiveArrowEntity extends Arrow
 		private double y;
 		private double z;
 		private Level world;
-		private Entity exploder;
 
 		public SimpleExplosion(Level worldIn, Entity exploderIn, @Nullable DamageSource dmgsrc, @Nullable ExplosionDamageCalculator ctx, double xIn, double yIn, double zIn, float sizeIn,
 				boolean causesFireIn, BlockInteraction modeIn) {
@@ -197,14 +197,14 @@ public class ExplosiveArrowEntity extends Arrow
 			x = xIn;
 			y = yIn;
 			z = zIn;
-			exploder = exploderIn;
 		}
 
 		@Override
 		public void explode()
 		{
-			List<BlockPos> list = getToBlow();
+			Entity exploder = getExploder();
 			BlockPos blockpos = new BlockPos(x, y, z);
+			world.gameEvent(exploder, GameEvent.EXPLODE, blockpos);
 			BlockState blockstate = world.getBlockState(blockpos);
 			FluidState fluidstate = world.getFluidState(blockpos);
 			if (!blockstate.isAir() || !fluidstate.isEmpty())
@@ -216,8 +216,9 @@ public class ExplosiveArrowEntity extends Arrow
 
 				if (f2 < 1.0F && (exploder == null
 						|| exploder.shouldBlockExplode(this, world, blockpos, blockstate, f2)))
-					list.add(blockpos);
+					getToBlow().add(blockpos);
 			}
+			ForgeEventFactory.onExplosionDetonate(world, this, new ArrayList<Entity>(), 1.0);
 		}
 	}
 }

@@ -1,7 +1,6 @@
 package com.lupicus.nasty.entity;
 
-import java.util.List;
-
+import java.util.ArrayList;
 import javax.annotation.Nullable;
 
 import com.lupicus.nasty.config.MyConfig;
@@ -33,6 +32,7 @@ import net.minecraft.world.ExplosionContext;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.event.ForgeEventFactory;
 
 public class ExplosiveArrowEntity extends ArrowEntity
 {
@@ -82,7 +82,7 @@ public class ExplosiveArrowEntity extends ArrowEntity
 		ServerWorld world = (ServerWorld) this.world;
 		SimpleExplosion e = new SimpleExplosion(world, this, source, null, x, y, z, r, false, mode);
 
-		if (net.minecraftforge.event.ForgeEventFactory.onExplosionStart(world, e))
+		if (ForgeEventFactory.onExplosionStart(world, e))
 			return e;
 
 		e.doExplosionA();
@@ -189,7 +189,6 @@ public class ExplosiveArrowEntity extends ArrowEntity
 		private double y;
 		private double z;
 		private World world;
-		private Entity exploder;
 
 		public SimpleExplosion(World worldIn, Entity exploderIn, @Nullable DamageSource dmgsrc, @Nullable ExplosionContext ctx, double xIn, double yIn, double zIn, float sizeIn,
 				boolean causesFireIn, Mode modeIn) {
@@ -198,14 +197,13 @@ public class ExplosiveArrowEntity extends ArrowEntity
 			x = xIn;
 			y = yIn;
 			z = zIn;
-			exploder = exploderIn;
 		}
 
 		@SuppressWarnings("deprecation")
 		@Override
 		public void doExplosionA()
 		{
-			List<BlockPos> list = getAffectedBlockPositions();
+			Entity exploder = getExploder();
 			BlockPos blockpos = new BlockPos(x, y, z);
 			BlockState blockstate = world.getBlockState(blockpos);
 			FluidState fluidstate = world.getFluidState(blockpos);
@@ -218,8 +216,9 @@ public class ExplosiveArrowEntity extends ArrowEntity
 
 				if (f2 < 1.0F && (exploder == null
 						|| exploder.canExplosionDestroyBlock(this, world, blockpos, blockstate, f2)))
-					list.add(blockpos);
+					getAffectedBlockPositions().add(blockpos);
 			}
+			ForgeEventFactory.onExplosionDetonate(world, this, new ArrayList<Entity>(), 1.0);
 		}
 	}
 }

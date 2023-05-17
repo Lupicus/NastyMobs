@@ -26,6 +26,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.DifficultyInstance;
@@ -426,7 +427,7 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 		int amp = 2;
 		if (difficulty.getDifficulty() == Difficulty.HARD)
 			++amp;
-		this.addEffect(new MobEffectInstance(MobEffects.JUMP, Integer.MAX_VALUE, amp));
+		this.addEffect(new MobEffectInstance(MobEffects.JUMP, MobEffectInstance.INFINITE_DURATION, amp));
 	}
 
 	@Override
@@ -571,7 +572,7 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 	@Override
 	protected void actuallyHurt(DamageSource source, float damageAmount)
 	{
-		if (source.isProjectile())
+		if (source.is(DamageTypeTags.IS_PROJECTILE))
 			damageAmount *= MyConfig.arrowDamageMultiplier;
 		super.actuallyHurt(source, damageAmount);
 	}
@@ -596,7 +597,7 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 		newmob.moveTo(mobpos.x(), mobpos.y(), mobpos.z(), mob.getYRot(), mob.getXRot());
 		newmob.entityData.set(SUB_TYPE, getSubType());
 
-		newmob.finalizeSpawn(world, world.getCurrentDifficultyAt(new BlockPos(mobpos)), MobSpawnType.CONVERSION, (SpawnGroupData) null,
+		newmob.finalizeSpawn(world, world.getCurrentDifficultyAt(BlockPos.containing(mobpos)), MobSpawnType.CONVERSION, (SpawnGroupData) null,
 				(CompoundTag) null);
 
 		if (mob instanceof Mob)

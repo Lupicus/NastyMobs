@@ -203,7 +203,7 @@ public class ExplosiveArrowEntity extends Arrow
 		public void explode()
 		{
 			Entity exploder = getExploder();
-			BlockPos blockpos = new BlockPos(x, y, z);
+			BlockPos blockpos = BlockPos.containing(x, y, z);
 			world.gameEvent(exploder, GameEvent.EXPLODE, blockpos);
 			BlockState blockstate = world.getBlockState(blockpos);
 			FluidState fluidstate = world.getFluidState(blockpos);

@@ -202,7 +202,7 @@ public class NastyWolfEntity extends Wolf implements Enemy // Monster
 		newmob.setInvulnerable(mob.isInvulnerable());
 		newmob.moveTo(mobpos.x(), mobpos.y(), mobpos.z(), mob.getYRot(), mob.getXRot());
 
-		newmob.finalizeSpawn(world, world.getCurrentDifficultyAt(new BlockPos(mobpos)), MobSpawnType.CONVERSION, (SpawnGroupData) null,
+		newmob.finalizeSpawn(world, world.getCurrentDifficultyAt(BlockPos.containing(mobpos)), MobSpawnType.CONVERSION, (SpawnGroupData) null,
 				(CompoundTag) null);
 
 		newmob.setAge(mob.getAge());

@@ -3,7 +3,6 @@ package com.lupicus.nasty.entity;
 import com.lupicus.nasty.config.MyConfig;
 import com.lupicus.nasty.item.ModItems;
 
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Arrow;
@@ -41,7 +40,7 @@ public class MagicArrowEntity extends Arrow
 		if (hitEntity != null) {
 			if (!hitEntity.isInvertedHealAndHarm()) {
 				float damage = hitEntity.lastHurt + (float) MyConfig.magicDamage;
-				hitEntity.hurt(DamageSource.MAGIC, damage);
+				hitEntity.hurt(damageSources().magic(), damage);
 			}
 		}
 	}

@@ -22,7 +22,7 @@ public class JumpNodeProcessor extends WalkNodeEvaluator
 	@Override
 	public void prepare(PathNavigationRegion region, Mob mobIn) {
 		super.prepare(region, mobIn);
-		jumpHeight = 1.125;
+		jumpHeight = Math.max(1.125, (double) this.mob.maxUpStep());
 		adjusted_j = Mth.floor(Math.max(1.0F, this.mob.getStepHeight()));
 		MobEffectInstance effect = mobIn.getEffect(MobEffects.JUMP);
 		if (effect != null)

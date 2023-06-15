@@ -43,7 +43,7 @@ public class SpreadVirusGoal extends Goal
 		if (this.entity.getRandom().nextFloat() >= this.chance) {
 			return false;
 		} else {
-			this.closestEntity = this.entity.level.getNearestEntity(this.watchedClass, this.predicate, this.entity,
+			this.closestEntity = this.entity.level().getNearestEntity(this.watchedClass, this.predicate, this.entity,
 					this.entity.getX(), this.entity.getEyeY(), this.entity.getZ(),
 					this.entity.getBoundingBox().inflate((double) this.maxDistance, 3.0D, (double) this.maxDistance));
 			return this.closestEntity != null;

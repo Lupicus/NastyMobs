@@ -58,8 +58,8 @@ public class MyConfig
 	public static int spawnBiome;
 	public static int spawnFeature;
 	public static int spawnDungeon;
-	public static int spawnBlockLight;
-	public static int spawnLightLevel;
+	public static int spawnLightAdj;
+	public static int spawnLightAdj2;
 	public static boolean spawnTempBased;
 	public static int[] spawnVariantWeights;
 	public static String[] biomeAdjustments;
@@ -94,8 +94,8 @@ public class MyConfig
 		spawnBiome = COMMON.spawnBiome.get();
 		spawnFeature = COMMON.spawnFeature.get();
 		spawnDungeon = COMMON.spawnDungeon.get();
-		spawnBlockLight = COMMON.spawnBlockLight.get();
-		spawnLightLevel = COMMON.spawnLightLevel.get();
+		spawnLightAdj = COMMON.spawnLightAdj.get();
+		spawnLightAdj2 = COMMON.spawnLightAdj2.get();
 		explosiveArrowOnArmor = COMMON.explosiveArrowOnArmor.get();
 		explosiveArrowOnBlock = COMMON.explosiveArrowOnBlock.get();
 		explosiveArrowOnShield = COMMON.explosiveArrowOnShield.get();
@@ -194,8 +194,8 @@ public class MyConfig
 		public final IntValue spawnBiome;
 		public final IntValue spawnFeature;
 		public final IntValue spawnDungeon;
-		public final IntValue spawnBlockLight;
-		public final IntValue spawnLightLevel;
+		public final IntValue spawnLightAdj;
+		public final IntValue spawnLightAdj2;
 		public final BooleanValue spawnTempBased;
 		public final ConfigValue<String> spawnVariantWeights;
 		public final ConfigValue<List<? extends String>> biomeAdjustments;
@@ -258,14 +258,14 @@ public class MyConfig
 					.comment("Spawn in Dungeon weight")
 					.translation(sectionTrans + "spawn_dungeon")
 					.defineInRange("SpawnDungeon", 100, 0, 200);
-			spawnBlockLight = builder
-					.comment("Spawn block light level (use 0 to be same as normal skeletons and use >= SpawnLightLevel for 1.16)")
-					.translation(sectionTrans + "spawn_block_light")
-					.defineInRange("SpawnBlockLight", 0, 0, 15);
-			spawnLightLevel = builder
-					.comment("Spawn light level (use 7 to be same as normal skeletons)")
-					.translation(sectionTrans + "spawn_light_level")
-					.defineInRange("SpawnLightLevel", 9, 0, 15);
+			spawnLightAdj = builder
+					.comment("Spawn light level adjustment (use 0 to be same as normal skeletons)")
+					.translation(sectionTrans + "spawn_light_adj")
+					.defineInRange("SpawnLightAdj", 2, 0, 15);
+			spawnLightAdj2 = builder
+					.comment("Spawn block level adjustment (use 0 to be same as normal skeletons)")
+					.translation(sectionTrans + "spawn_light_adj2")
+					.defineInRange("SpawnLightAdj2", 0, 0, 15);
 			arrowDamageMultiplier = builder
 					.comment("Arrow Damage Multiplier (damage to skeleton)")
 					.translation(sectionTrans + "arrow_damage_multiplier")

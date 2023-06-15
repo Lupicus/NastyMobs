@@ -16,7 +16,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.EntityRenderersEvent.RegisterRenderers;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.CreativeModeTabEvent;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
@@ -82,7 +82,7 @@ public class Main
 	    }
 
     	@SubscribeEvent
-    	public static void onCreativeTab(CreativeModeTabEvent.BuildContents event)
+    	public static void onCreativeTab(BuildCreativeModeTabContentsEvent event)
     	{
     		ModItems.setupTabs(event);
     	}

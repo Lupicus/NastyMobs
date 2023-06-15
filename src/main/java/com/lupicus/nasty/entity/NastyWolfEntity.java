@@ -185,9 +185,9 @@ public class NastyWolfEntity extends Wolf implements Enemy // Monster
 
 	public static void onInfect(Wolf mob)
 	{
-		ServerLevel world = (ServerLevel) mob.level;
+		ServerLevel world = (ServerLevel) mob.level();
 		Vec3 mobpos = mob.position();
-		if (mob.isOnGround())
+		if (mob.onGround())
 			mob.setDeltaMovement(0, 0, 0);
 
 		NastyWolfEntity newmob = ModEntities.NASTY_WOLF.create(world);

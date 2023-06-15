@@ -77,9 +77,10 @@ public class ExplosiveArrowEntity extends Arrow
 	 */
 	private Explosion createExplosion(@Nullable DamageSource source, double x, double y, double z, float r, BlockInteraction mode)
 	{
+		Level level = level();
 		if (!(level instanceof ServerLevel))
 			return null;
-		ServerLevel world = (ServerLevel) this.level;
+		ServerLevel world = (ServerLevel) level;
 		SimpleExplosion e = new SimpleExplosion(world, this, source, null, x, y, z, r, false, mode);
 
 		if (ForgeEventFactory.onExplosionStart(world, e))
@@ -142,14 +143,15 @@ public class ExplosiveArrowEntity extends Arrow
 			ItemStack stack = le.getItemBySlot(slot);
 			if (!stack.isEmpty()) {
 				le.setItemSlot(slot, ItemStack.EMPTY);
+				Level level = le.level();
 				Vec3 pos = le.position();
-				ItemEntity itementity = new ItemEntity(le.level, pos.x, pos.y + 1.0, pos.z, stack);
+				ItemEntity itementity = new ItemEntity(level, pos.x, pos.y + 1.0, pos.z, stack);
 				itementity.setDefaultPickUpDelay();
 				float f = random.nextFloat() * 0.5F;
 				float f1 = random.nextFloat() * ((float)Math.PI * 2F);
 				itementity.setDeltaMovement((double)(-Mth.sin(f1) * f), 0.2, (double)(Mth.cos(f1) * f));
-				le.level.addFreshEntity(itementity);
-				le.level.playSound(null, le.getX(), le.getY(), le.getZ(), ModSounds.ARMOR_DROP, le.getSoundSource(), 1.0F, 1.0F);
+				level.addFreshEntity(itementity);
+				level.playSound(null, le.getX(), le.getY(), le.getZ(), ModSounds.ARMOR_DROP, le.getSoundSource(), 1.0F, 1.0F);
 			}
 			if (isAlive())
 				discard();

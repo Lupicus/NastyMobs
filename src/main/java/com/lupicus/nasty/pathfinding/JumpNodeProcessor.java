@@ -154,7 +154,7 @@ public class JumpNodeProcessor extends WalkNodeEvaluator
 						return node;
 					}
 
-					while (y > this.mob.level.getMinBuildHeight()) {
+					while (y > this.level.getMinBuildHeight()) {
 						--y;
 						pathnodetype = this.getCachedBlockType(this.mob, x, y, z);
 						if (pathnodetype != BlockPathTypes.WATER) {
@@ -171,7 +171,7 @@ public class JumpNodeProcessor extends WalkNodeEvaluator
 
 					while (pathnodetype == BlockPathTypes.OPEN) {
 						--y;
-						if (y < this.mob.level.getMinBuildHeight()) {
+						if (y < this.level.getMinBuildHeight()) {
 							return this.getBlockedNode(x, i, z);
 						}
 

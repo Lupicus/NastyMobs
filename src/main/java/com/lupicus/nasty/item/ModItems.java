@@ -17,7 +17,7 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraftforge.common.ForgeSpawnEggItem;
-import net.minecraftforge.event.CreativeModeTabEvent;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
 public class ModItems
@@ -55,14 +55,14 @@ public class ModItems
 		});
 	}
 
-	public static void setupTabs(CreativeModeTabEvent.BuildContents event)
+	public static void setupTabs(BuildCreativeModeTabContentsEvent event)
 	{
-		if (event.getTab() == CreativeModeTabs.COMBAT)
+		if (event.getTabKey() == CreativeModeTabs.COMBAT)
 		{
 			event.accept(EXPLOSIVE_ARROW);
 			event.accept(MAGIC_ARROW);
 		}
-		else if (event.getTab() == CreativeModeTabs.SPAWN_EGGS)
+		else if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS)
 		{
 			event.accept(NASTY_SKELETON_SPAWN_EGG);
 			event.accept(NASTY_WOLF_SPAWN_EGG);

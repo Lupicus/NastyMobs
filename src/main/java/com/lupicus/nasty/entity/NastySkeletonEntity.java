@@ -1,7 +1,6 @@
 package com.lupicus.nasty.entity;
 
 import java.util.HashMap;
-import java.util.Random;
 import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
@@ -72,6 +71,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.storage.LevelData;
 import net.minecraft.world.phys.Vec3;
 
@@ -204,7 +204,8 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 	@Override
 	public void reassessWeaponGoal()
 	{
-		if (this.level != null && !this.level.isClientSide) {
+		Level level = this.level();
+		if (level != null && !level.isClientSide) {
 			if (meleeGoal == null)
 				return;
 			this.goalSelector.removeGoal(this.meleeGoal);
@@ -212,7 +213,7 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 			ItemStack itemstack = getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof BowItem));
 			if (itemstack.getItem() instanceof BowItem) {
 				int i = 20;
-				if (this.level.getDifficulty() != Difficulty.HARD) {
+				if (level.getDifficulty() != Difficulty.HARD) {
 					i = 40;
 				}
 
@@ -405,15 +406,17 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 		return defVariant;
 	}
 
-	public static boolean isDarkEnoughToSpawn(ServerLevelAccessor worldIn, BlockPos pos, Random randomIn)
+	public static boolean isDarkEnoughToSpawn(ServerLevelAccessor worldIn, BlockPos pos, RandomSource randomIn)
 	{
 		if (worldIn.getBrightness(LightLayer.SKY, pos) > randomIn.nextInt(32))
 			return false;
-		if (worldIn.getBrightness(LightLayer.BLOCK, pos) > MyConfig.spawnBlockLight)
+		DimensionType dimensiontype = worldIn.dimensionType();
+		int i = dimensiontype.monsterSpawnBlockLightLimit() + MyConfig.spawnLightAdj2;
+		if (i < 15 && worldIn.getBrightness(LightLayer.BLOCK, pos) > i)
 			return false;
-		int i = worldIn.getLevel().isThundering() ? worldIn.getMaxLocalRawBrightness(pos, 10)
+		int j = worldIn.getLevel().isThundering() ? worldIn.getMaxLocalRawBrightness(pos, 10)
 				: worldIn.getMaxLocalRawBrightness(pos);
-		return i <= randomIn.nextInt(MyConfig.spawnLightLevel + 1);
+		return j <= dimensiontype.monsterSpawnLightTest().sample(randomIn) + randomIn.nextInt(MyConfig.spawnLightAdj + 1);
 	}
 
 	public static boolean checkSpawnRules(EntityType<? extends NastySkeletonEntity> type, ServerLevelAccessor worldIn, MobSpawnType reason,
@@ -478,10 +481,10 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 		d1 = ArrowHelper.computeY(d3, d1, velocity, abstractarrowentity.getY(), target.getY(), target.getBbHeight());
 		float inaccuracy = 0.0F;
 		if (random.nextDouble() < MyConfig.addInaccuracy)
-			inaccuracy = (float) (14 - level.getDifficulty().getId() * 4);
+			inaccuracy = (float) (14 - level().getDifficulty().getId() * 4);
 		abstractarrowentity.shoot(d0, d1, d2, (float) velocity, inaccuracy);
 		this.playSound(SoundEvents.SKELETON_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
-		this.level.addFreshEntity(abstractarrowentity);
+		this.level().addFreshEntity(abstractarrowentity);
 	}
 
 	@Override
@@ -505,7 +508,7 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 		// innate power and knockback
 		int i;
 		int j = 1;
-		if (level.getDifficulty() == Difficulty.HARD)
+		if (level().getDifficulty() == Difficulty.HARD)
 		{
 			j += 1;
 			i = MyConfig.bonusHardPower;
@@ -580,9 +583,9 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 	@Override
 	public void onInfect(Entity mob)
 	{
-		ServerLevel world = (ServerLevel) mob.level;
+		ServerLevel world = (ServerLevel) mob.level();
 		Vec3 mobpos = mob.position();
-		if (mob.isOnGround())
+		if (mob.onGround())
 			mob.setDeltaMovement(0, 0, 0);
 
 		NastySkeletonEntity newmob = ModEntities.NASTY_SKELETON.create(world);
@@ -607,9 +610,8 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 			for (EquipmentSlot slot : EquipmentSlot.values())
 			{
 				stack = from.getItemBySlot(slot);
-				newmob.setItemSlot(slot, stack.copy());
+				newmob.setItemSlot(slot, stack.copyAndClear());
 				newmob.setDropChance(slot, getEquipmentDropChance(slot));
-				stack.setCount(0);
 			}
 			newmob.setCanPickUpLoot(from.canPickUpLoot());
 			if (from.isPersistenceRequired())

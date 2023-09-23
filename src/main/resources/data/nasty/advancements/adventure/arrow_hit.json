@@ -20,10 +20,17 @@
     "projectile": {
       "trigger": "minecraft:entity_hurt_player",
       "conditions": {
-        "type": "nasty:skeleton",
         "damage": {
+          "source_entity": {
+            "type": "nasty:skeleton"
+          },
           "type": {
-            "is_projectile": true
+            "tags": [
+              {
+                "id": "minecraft:is_projectile",
+                "expected": true
+              }
+            ]
           }
         }
       }

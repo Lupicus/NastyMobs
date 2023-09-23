@@ -235,16 +235,12 @@ public class NastyWolfEntity extends Wolf implements Enemy // Monster
 		}
 
 		@Override
-		protected void checkAndPerformAttack(LivingEntity enemy, double distToEnemySqr) {
+		protected boolean canPerformAttack(LivingEntity enemy) {
 			if (!isTimeToAttack())
-				return;
-			double d0 = this.getAttackReachSqr(enemy);
-			if (distToEnemySqr <= d0) {
-				resetAttackCooldown(); // reset attackTick
-				this.mob.swing(InteractionHand.MAIN_HAND);
-				this.mob.doHurtTarget(enemy);
-			}
-			else if (d0 < 4.0 && mob.getNavigation().isDone())
+				return false;
+			if (this.mob.isWithinMeleeAttackRange(enemy))
+				return this.mob.getSensing().hasLineOfSight(enemy);
+			if (this.mob.distanceToSqr(enemy) < 4.0 && mob.getNavigation().isDone())
 			{
 				// (in blind spot) move the mob closer so it can attack
 				double x = enemy.getX();
@@ -255,6 +251,7 @@ public class NastyWolfEntity extends Wolf implements Enemy // Monster
 				z = (z - mob.getZ()) * 0.5 + z;
 				mob.getMoveControl().setWantedPosition(x, y, z, speed);
 			}
+			return false;
 		}
 	}
 }

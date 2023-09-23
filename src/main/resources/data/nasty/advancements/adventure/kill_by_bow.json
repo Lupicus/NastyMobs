@@ -24,7 +24,12 @@
           "type": "nasty:skeleton"
         },
         "killing_blow": {
-          "is_projectile": true
+          "tags": [
+            {
+              "id": "minecraft:is_projectile",
+              "expected": true
+            }
+          ]
         }
       }
     }

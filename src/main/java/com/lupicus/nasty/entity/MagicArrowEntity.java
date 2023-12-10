@@ -5,25 +5,26 @@ import com.lupicus.nasty.item.ModItems;
 
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 
-public class MagicArrowEntity extends Arrow
+public class MagicArrowEntity extends AbstractArrow
 {
+	private static final ItemStack DEFAULT_ARROW_STACK = new ItemStack(ModItems.MAGIC_ARROW);
 	private LivingEntity hitEntity = null;
 
-	public MagicArrowEntity(EntityType<? extends Arrow> type, Level world) {
-		super(type, world);
+	public MagicArrowEntity(EntityType<? extends MagicArrowEntity> type, Level world) {
+		super(type, world, DEFAULT_ARROW_STACK);
 	}
 
-	public MagicArrowEntity(Level worldIn, double x, double y, double z) {
-		super(worldIn, x, y, z);
+	public MagicArrowEntity(Level worldIn, double x, double y, double z, ItemStack stack) {
+		super(ModEntities.MAGIC_ARROW, x, y, z, worldIn, stack);
 	}
 
-	public MagicArrowEntity(Level worldIn, LivingEntity shooter) {
-		super(worldIn, shooter);
+	public MagicArrowEntity(Level worldIn, LivingEntity shooter, ItemStack stack) {
+		super(ModEntities.MAGIC_ARROW, shooter, worldIn, stack);
 	}
 
 	@Override
@@ -43,10 +44,5 @@ public class MagicArrowEntity extends Arrow
 				hitEntity.hurt(damageSources().magic(), damage);
 			}
 		}
-	}
-
-	@Override
-	protected ItemStack getPickupItem() {
-		return new ItemStack(ModItems.MAGIC_ARROW);
 	}
 }

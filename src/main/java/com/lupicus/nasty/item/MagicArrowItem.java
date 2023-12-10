@@ -16,8 +16,7 @@ public class MagicArrowItem extends ArrowItem
 
 	@Override
 	public AbstractArrow createArrow(Level worldIn, ItemStack stack, LivingEntity shooter) {
-		MagicArrowEntity arrowentity = new MagicArrowEntity(worldIn, shooter);
-		arrowentity.setEffectsFromItem(stack);
+		MagicArrowEntity arrowentity = new MagicArrowEntity(worldIn, shooter, stack.copyWithCount(1));
 		return arrowentity;
 	}
 }

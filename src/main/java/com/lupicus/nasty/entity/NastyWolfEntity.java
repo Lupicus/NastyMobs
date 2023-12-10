@@ -96,7 +96,7 @@ public class NastyWolfEntity extends Wolf implements Enemy // Monster
 	public static boolean checkSpawnRules(EntityType<? extends NastyWolfEntity> type, ServerLevelAccessor worldIn, MobSpawnType reason,
 			BlockPos pos, RandomSource randomIn)
 	{
-		return worldIn.getDifficulty() != Difficulty.PEACEFUL && Monster.isDarkEnoughToSpawn(worldIn, pos, randomIn) && checkMobSpawnRules(type, worldIn, reason, pos, randomIn);
+		return worldIn.getDifficulty() != Difficulty.PEACEFUL && (MobSpawnType.ignoresLightRequirements(reason) || Monster.isDarkEnoughToSpawn(worldIn, pos, randomIn)) && checkMobSpawnRules(type, worldIn, reason, pos, randomIn);
 	}
 
 	@Override

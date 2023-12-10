@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "nasty:skeleton"
+    "nasty:skeleton",
+    "nasty:wolf"
   ]
 }

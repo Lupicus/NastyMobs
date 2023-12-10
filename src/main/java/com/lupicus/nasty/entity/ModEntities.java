@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.lupicus.nasty.Main;
 import com.lupicus.nasty.config.MyConfig;
+import com.lupicus.nasty.renderer.entity.ExplosiveArrowRenderer;
+import com.lupicus.nasty.renderer.entity.MagicArrowRenderer;
 import com.lupicus.nasty.renderer.entity.NastySkeletonRenderer;
 import com.lupicus.nasty.renderer.entity.NastyWolfRenderer;
 
@@ -24,6 +26,8 @@ public class ModEntities
 {
 	public static final EntityType<NastySkeletonEntity> NASTY_SKELETON = register("skeleton", EntityType.Builder.of(NastySkeletonEntity::new, MobCategory.MONSTER).sized(0.6F, 1.99F).clientTrackingRange(8));
 	public static final EntityType<NastyWolfEntity> NASTY_WOLF = register("wolf", EntityType.Builder.of(NastyWolfEntity::new, MobCategory.MONSTER).sized(0.6F, 0.85F).clientTrackingRange(8));
+	public static final EntityType<ExplosiveArrowEntity> EXPLOSIVE_ARROW = register("explosive_arrow", EntityType.Builder.<ExplosiveArrowEntity>of(ExplosiveArrowEntity::new, MobCategory.MISC).sized(0.5F, 0.5F).clientTrackingRange(4).updateInterval(20));
+	public static final EntityType<MagicArrowEntity> MAGIC_ARROW = register("magic_arrow", EntityType.Builder.<MagicArrowEntity>of(MagicArrowEntity::new, MobCategory.MISC).sized(0.5F, 0.5F).clientTrackingRange(4).updateInterval(20));
 
 	private static <T extends Entity> EntityType<T> register(String name, EntityType.Builder<T> builder)
 	{
@@ -37,6 +41,8 @@ public class ModEntities
 	{
 		forgeRegistry.register("skeleton", NASTY_SKELETON);
 		forgeRegistry.register("wolf", NASTY_WOLF);
+		forgeRegistry.register("explosive_arrow", EXPLOSIVE_ARROW);
+		forgeRegistry.register("magic_arrow", MAGIC_ARROW);
 
 		SpawnPlacements.register(NASTY_SKELETON, SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, NastySkeletonEntity::checkSpawnRules);
 		SpawnPlacements.register(NASTY_WOLF, SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, NastyWolfEntity::checkSpawnRules);
@@ -53,6 +59,8 @@ public class ModEntities
 	{
 		event.registerEntityRenderer(NASTY_SKELETON, NastySkeletonRenderer::new);
 		event.registerEntityRenderer(NASTY_WOLF, NastyWolfRenderer::new);
+		event.registerEntityRenderer(EXPLOSIVE_ARROW, ExplosiveArrowRenderer::new);
+		event.registerEntityRenderer(MAGIC_ARROW, MagicArrowRenderer::new);
 	}
 
 	public static void addSpawnData()

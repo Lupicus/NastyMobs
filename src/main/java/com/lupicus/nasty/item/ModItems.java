@@ -7,7 +7,6 @@ import com.lupicus.nasty.entity.ModEntities;
 import net.minecraft.core.Position;
 import net.minecraft.core.dispenser.AbstractProjectileDispenseBehavior;
 import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -40,7 +39,7 @@ public class ModItems
 		DispenserBlock.registerBehavior(EXPLOSIVE_ARROW, new AbstractProjectileDispenseBehavior() {
 			@Override
 			protected Projectile getProjectile(Level worldIn, Position position, ItemStack stack) {
-				Arrow arrowentity = new ExplosiveArrowEntity(worldIn, position.x(), position.y(), position.z());
+				AbstractArrow arrowentity = new ExplosiveArrowEntity(worldIn, position.x(), position.y(), position.z(), stack.copyWithCount(1));
 				arrowentity.pickup = AbstractArrow.Pickup.ALLOWED;
 				return arrowentity;
 			}
@@ -48,7 +47,7 @@ public class ModItems
 		DispenserBlock.registerBehavior(MAGIC_ARROW, new AbstractProjectileDispenseBehavior() {
 			@Override
 			protected Projectile getProjectile(Level worldIn, Position position, ItemStack stack) {
-				Arrow arrowentity = new MagicArrowEntity(worldIn, position.x(), position.y(), position.z());
+				AbstractArrow arrowentity = new MagicArrowEntity(worldIn, position.x(), position.y(), position.z(), stack.copyWithCount(1));
 				arrowentity.pickup = AbstractArrow.Pickup.ALLOWED;
 				return arrowentity;
 			}

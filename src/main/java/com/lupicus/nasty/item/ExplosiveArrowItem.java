@@ -16,8 +16,7 @@ public class ExplosiveArrowItem extends ArrowItem
 
 	@Override
 	public AbstractArrow createArrow(Level worldIn, ItemStack stack, LivingEntity shooter) {
-		ExplosiveArrowEntity arrowentity = new ExplosiveArrowEntity(worldIn, shooter);
-		arrowentity.setEffectsFromItem(stack);
+		ExplosiveArrowEntity arrowentity = new ExplosiveArrowEntity(worldIn, shooter, stack.copyWithCount(1));
 		return arrowentity;
 	}
 }

@@ -1,9 +1,9 @@
 package com.lupicus.nasty.entity;
 
 import java.util.ArrayList;
-import javax.annotation.Nullable;
 
 import com.lupicus.nasty.config.MyConfig;
+import com.lupicus.nasty.item.ModItems;
 import com.lupicus.nasty.sound.ModSounds;
 
 import net.minecraft.core.BlockPos;
@@ -12,83 +12,72 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Explosion.BlockInteraction;
-import net.minecraft.world.level.ExplosionDamageCalculator;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.ForgeEventFactory;
 
-public class ExplosiveArrowEntity extends Arrow
+public class ExplosiveArrowEntity extends AbstractArrow
 {
+	private static final ItemStack DEFAULT_ARROW_STACK = new ItemStack(ModItems.EXPLOSIVE_ARROW);
 	private BlockPos target;
 
-	public ExplosiveArrowEntity(EntityType<? extends Arrow> type, Level world)
+	public ExplosiveArrowEntity(EntityType<? extends ExplosiveArrowEntity> type, Level world)
 	{
-		super(type, world);
+		super(type, world, DEFAULT_ARROW_STACK);
 	}
 
-	public ExplosiveArrowEntity(Level worldIn, double x, double y, double z)
+	public ExplosiveArrowEntity(Level worldIn, double x, double y, double z, ItemStack stack)
 	{
-		super(worldIn, x, y, z);
+		super(ModEntities.EXPLOSIVE_ARROW, x, y, z, worldIn, stack);
 	}
 
-	public ExplosiveArrowEntity(Level worldIn, LivingEntity shooter)
+	public ExplosiveArrowEntity(Level worldIn, LivingEntity shooter, ItemStack stack)
 	{
-		super(worldIn, shooter);
+		super(ModEntities.EXPLOSIVE_ARROW, shooter, worldIn, stack);
 	}
 
 	@Override
-	protected void onHit(HitResult raytraceResultIn)
+	protected void onHitBlock(BlockHitResult result)
 	{
-		super.onHit(raytraceResultIn);
-		if (raytraceResultIn.getType() == HitResult.Type.BLOCK)
-		{
-			BlockHitResult result = (BlockHitResult) raytraceResultIn;
-			target = result.getBlockPos();
-			//world.createExplosion(this, target.getX()+0.5, target.getY()+0.5, target.getZ()+0.5, 0.5F, Explosion.BlockInteraction.DESTROY);
-			createExplosion(target.getX()+0.5, target.getY()+0.5, target.getZ()+0.5, 0.5F, Explosion.BlockInteraction.DESTROY);
-			this.discard();
-		}
-	}
-
-	private Explosion createExplosion(double x, double y, double z, float r, BlockInteraction mode)
-	{
-		return createExplosion((DamageSource) null, x, y, z, r, mode);
+		super.onHitBlock(result);
+		target = result.getBlockPos().immutable();
+		//world.createExplosion(this, target.getX()+0.5, target.getY()+0.5, target.getZ()+0.5, 0.5F, Explosion.BlockInteraction.DESTROY);
+		createExplosion(target.getX()+0.5, target.getY()+0.5, target.getZ()+0.5, 0.5F, Explosion.BlockInteraction.DESTROY);
+		this.discard();
 	}
 
 	/**
-	 * Modified version from ServerWorld.createExplosion
+	 * Modified version from ServerLevel.explode
 	 */
-	private Explosion createExplosion(@Nullable DamageSource source, double x, double y, double z, float r, BlockInteraction mode)
+	private Explosion createExplosion(double x, double y, double z, float r, BlockInteraction mode)
 	{
 		Level level = level();
 		if (!(level instanceof ServerLevel))
 			return null;
 		ServerLevel world = (ServerLevel) level;
-		SimpleExplosion e = new SimpleExplosion(world, this, source, null, x, y, z, r, false, mode);
+		SimpleExplosion e = new SimpleExplosion(world, this, x, y, z, r, false, mode);
 
 		if (ForgeEventFactory.onExplosionStart(world, e))
 			return e;
 
 		e.explode();
 		e.finalizeExplosion(false);
-		if (mode == Explosion.BlockInteraction.KEEP)
+		if (!e.interactsWithBlocks())
 			e.clearToBlow();
 
 		for (ServerPlayer serverplayerentity : world.players())
@@ -96,7 +85,8 @@ public class ExplosiveArrowEntity extends Arrow
 			if (serverplayerentity.distanceToSqr(x, y, z) < 4096.0D)
 			{
 				serverplayerentity.connection.send(new ClientboundExplodePacket(x, y, z, r, e.getToBlow(),
-						e.getHitPlayers().get(serverplayerentity)));
+						e.getHitPlayers().get(serverplayerentity), e.getBlockInteraction(),
+						e.getSmallExplosionParticles(), e.getLargeExplosionParticles(), e.getExplosionSound()));
 			}
 		}
 
@@ -192,9 +182,9 @@ public class ExplosiveArrowEntity extends Arrow
 		private double z;
 		private Level world;
 
-		public SimpleExplosion(Level worldIn, Entity exploderIn, @Nullable DamageSource dmgsrc, @Nullable ExplosionDamageCalculator ctx, double xIn, double yIn, double zIn, float sizeIn,
+		public SimpleExplosion(Level worldIn, Entity exploderIn, double xIn, double yIn, double zIn, float sizeIn,
 				boolean causesFireIn, BlockInteraction modeIn) {
-			super(worldIn, exploderIn, dmgsrc, ctx, xIn, yIn, zIn, sizeIn, causesFireIn, modeIn);
+			super(worldIn, exploderIn, xIn, yIn, zIn, sizeIn, causesFireIn, modeIn);
 			world = worldIn;
 			x = xIn;
 			y = yIn;
@@ -204,12 +194,12 @@ public class ExplosiveArrowEntity extends Arrow
 		@Override
 		public void explode()
 		{
-			Entity exploder = getExploder();
+			Entity exploder = getDirectSourceEntity();
 			BlockPos blockpos = BlockPos.containing(x, y, z);
 			world.gameEvent(exploder, GameEvent.EXPLODE, blockpos);
 			BlockState blockstate = world.getBlockState(blockpos);
 			FluidState fluidstate = world.getFluidState(blockpos);
-			if (!blockstate.isAir() || !fluidstate.isEmpty())
+			if (world.isInWorldBounds(blockpos) && (!blockstate.isAir() || !fluidstate.isEmpty()))
 			{
 				float f2 = Math.max(blockstate.getExplosionResistance(world, blockpos, this),
 									fluidstate.getExplosionResistance(world, blockpos, this));

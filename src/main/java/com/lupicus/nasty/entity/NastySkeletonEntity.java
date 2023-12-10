@@ -422,7 +422,7 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 	public static boolean checkSpawnRules(EntityType<? extends NastySkeletonEntity> type, ServerLevelAccessor worldIn, MobSpawnType reason,
 			BlockPos pos, RandomSource randomIn)
 	{
-		return worldIn.getDifficulty() != Difficulty.PEACEFUL && isDarkEnoughToSpawn(worldIn, pos, randomIn) && checkMobSpawnRules(type, worldIn, reason, pos, randomIn);
+		return worldIn.getDifficulty() != Difficulty.PEACEFUL && (MobSpawnType.ignoresLightRequirements(reason) || isDarkEnoughToSpawn(worldIn, pos, randomIn)) && checkMobSpawnRules(type, worldIn, reason, pos, randomIn);
 	}
 
 	protected void setPotionsBasedOnDifficulty(DifficultyInstance difficulty)

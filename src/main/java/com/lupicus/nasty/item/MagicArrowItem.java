@@ -2,8 +2,11 @@ package com.lupicus.nasty.item;
 
 import com.lupicus.nasty.entity.MagicArrowEntity;
 
+import net.minecraft.core.Direction;
+import net.minecraft.core.Position;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ArrowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -17,6 +20,13 @@ public class MagicArrowItem extends ArrowItem
 	@Override
 	public AbstractArrow createArrow(Level worldIn, ItemStack stack, LivingEntity shooter) {
 		MagicArrowEntity arrowentity = new MagicArrowEntity(worldIn, shooter, stack.copyWithCount(1));
+		return arrowentity;
+	}
+
+	@Override
+	public Projectile asProjectile(Level worldIn, Position position, ItemStack stack, Direction dir) {
+		AbstractArrow arrowentity = new MagicArrowEntity(worldIn, position.x(), position.y(), position.z(), stack.copyWithCount(1));
+		arrowentity.pickup = AbstractArrow.Pickup.ALLOWED;
 		return arrowentity;
 	}
 }

@@ -33,12 +33,11 @@ import net.minecraftforge.event.ForgeEventFactory;
 
 public class ExplosiveArrowEntity extends AbstractArrow
 {
-	private static final ItemStack DEFAULT_ARROW_STACK = new ItemStack(ModItems.EXPLOSIVE_ARROW);
 	private BlockPos target;
 
 	public ExplosiveArrowEntity(EntityType<? extends ExplosiveArrowEntity> type, Level world)
 	{
-		super(type, world, DEFAULT_ARROW_STACK);
+		super(type, world);
 	}
 
 	public ExplosiveArrowEntity(Level worldIn, double x, double y, double z, ItemStack stack)
@@ -212,5 +211,10 @@ public class ExplosiveArrowEntity extends AbstractArrow
 			}
 			ForgeEventFactory.onExplosionDetonate(world, this, new ArrayList<Entity>(), 1.0);
 		}
+	}
+
+	@Override
+	protected ItemStack getDefaultPickupItem() {
+		return new ItemStack(ModItems.EXPLOSIVE_ARROW);
 	}
 }

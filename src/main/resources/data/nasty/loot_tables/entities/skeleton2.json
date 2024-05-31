@@ -9,8 +9,8 @@
           "type": "minecraft:item",
           "functions": [
             {
-              "function": "minecraft:set_nbt",
-              "tag": "{Potion:\"minecraft:leaping\"}"
+              "function": "minecraft:set_potion",
+              "id": "minecraft:leaping"
             }
           ],
           "name": "minecraft:potion"
@@ -20,8 +20,8 @@
           "type": "minecraft:item",
           "functions": [
             {
-              "function": "minecraft:set_nbt",
-              "tag": "{Potion:\"minecraft:swiftness\"}"
+              "function": "minecraft:set_potion",
+              "id": "minecraft:swiftness"
             }
           ],
           "name": "minecraft:potion"

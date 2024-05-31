@@ -16,7 +16,7 @@
         {
           "weight": 15,
           "type": "minecraft:loot_table",
-          "name": "nasty:entities/skeleton2"
+          "value": "nasty:entities/skeleton2"
         },
         {
           "weight": 10,
@@ -78,7 +78,7 @@
       "entries": [
         {
           "type": "minecraft:loot_table",
-          "name": "nasty:entities/skeleton"
+          "value": "nasty:entities/skeleton"
         }
       ]
     }

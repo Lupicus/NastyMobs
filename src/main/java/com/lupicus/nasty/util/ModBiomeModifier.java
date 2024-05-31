@@ -2,7 +2,7 @@ package com.lupicus.nasty.util;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.Holder;
 import net.minecraft.world.level.biome.Biome;
@@ -24,9 +24,9 @@ public class ModBiomeModifier implements BiomeModifier
     }
 
     @Override
-    public Codec<? extends BiomeModifier> codec()
+    public MapCodec<? extends BiomeModifier> codec()
     {
-    	return Codec.unit(ModBiomeModifier.INSTANCE);
+    	return MapCodec.unit(ModBiomeModifier.INSTANCE);
     }
 
     public static void register(@Nullable IForgeRegistry<Object> forgeRegistry)

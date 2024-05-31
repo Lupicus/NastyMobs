@@ -39,7 +39,7 @@ public class JumpMovementController extends MoveControl
 	         BlockPos blockpos = mob.blockPosition();
 	         BlockState blockstate = this.mob.level().getBlockState(blockpos);
 	         VoxelShape voxelshape = blockstate.getCollisionShape(this.mob.level(), blockpos);
-	         if (d2 > (double) this.mob.getStepHeight() && d0 * d0 + d1 * d1 < (double) Math.max(1.0F, this.mob.getBbWidth()) || !voxelshape.isEmpty() && this.mob.getY() < voxelshape.max(Direction.Axis.Y) + (double)blockpos.getY() &&
+	         if (d2 > (double) this.mob.maxUpStep() && d0 * d0 + d1 * d1 < (double) Math.max(1.0F, this.mob.getBbWidth()) || !voxelshape.isEmpty() && this.mob.getY() < voxelshape.max(Direction.Axis.Y) + (double)blockpos.getY() &&
 	        		 (mob.hasEffect(MobEffects.JUMP) || (!blockstate.is(BlockTags.DOORS) && !blockstate.is(BlockTags.FENCES)))) {
 	            this.mob.getJumpControl().jump();
 	            this.operation = MoveControl.Operation.JUMPING;

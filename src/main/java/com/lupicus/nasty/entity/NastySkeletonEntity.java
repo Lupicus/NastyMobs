@@ -15,11 +15,14 @@ import com.lupicus.nasty.util.ArrowHelper;
 import com.mojang.logging.LogUtils;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -67,12 +70,14 @@ import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ProjectileWeaponItem;
+import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.storage.LevelData;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.phys.Vec3;
 
 public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
@@ -160,10 +165,10 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 	}
 
 	@Override
-	protected void defineSynchedData()
+	protected void defineSynchedData(SynchedEntityData.Builder b)
 	{
-		super.defineSynchedData();
-		this.entityData.define(SUB_TYPE, 0);
+		super.defineSynchedData(b);
+		b.define(SUB_TYPE, 0);
 	}
 
 	@Override
@@ -192,10 +197,10 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 	}
 
 	@Override
-	public ResourceLocation getDefaultLootTable()
+	public ResourceKey<LootTable> getDefaultLootTable()
 	{
-		ResourceLocation res = super.getDefaultLootTable();
-		return new ResourceLocation(res.getNamespace(), res.getPath() + "/" + getSubType());
+		ResourceLocation res = super.getDefaultLootTable().location();
+		return ResourceKey.create(Registries.LOOT_TABLE, new ResourceLocation(res.getNamespace(), res.getPath() + "/" + getSubType()));
 	}
 
 	/**
@@ -212,9 +217,9 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 			this.goalSelector.removeGoal(this.bowGoal);
 			ItemStack itemstack = getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof BowItem));
 			if (itemstack.getItem() instanceof BowItem) {
-				int i = 20;
+				int i = getHardAttackInterval();
 				if (level.getDifficulty() != Difficulty.HARD) {
-					i = 40;
+					i = getAttackInterval();
 				}
 
 				this.bowGoal.setMinAttackInterval(i);
@@ -229,7 +234,7 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 	@Override
 	@Nullable
 	public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, MobSpawnType reason,
-			@Nullable SpawnGroupData spawnDataIn, @Nullable CompoundTag dataTag)
+			@Nullable SpawnGroupData spawnDataIn)
 	{
 		BlockPos pos = blockPosition();
 		Biome biome = worldIn.getBiome(pos).value();
@@ -248,14 +253,14 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 
 		if (difficultyIn.getDifficulty() == Difficulty.HARD)
 		{
-			this.getAttribute(Attributes.ATTACK_DAMAGE).addPermanentModifier(new AttributeModifier("difficulty", 3.0, Operation.ADDITION));
+			this.getAttribute(Attributes.ATTACK_DAMAGE).addPermanentModifier(new AttributeModifier("difficulty", 3.0, Operation.ADD_VALUE));
 		}
 
-		spawnDataIn = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+		spawnDataIn = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn);
 
 		// calculate new health using horizontal distance (i.e. ignore Y)
 		LevelData winfo = worldIn.getLevelData();
-		BlockPos spos = new BlockPos(winfo.getXSpawn(), winfo.getYSpawn(), winfo.getZSpawn());
+		BlockPos spos = winfo.getSpawnPos();
 		double x0 = (double) spos.getX();
 		double z0 = (double) spos.getZ();
 		double xzf = worldIn.dimensionType().coordinateScale();
@@ -291,13 +296,13 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 			double val = adj.hp;
 			if (val != 0.0)
 			{
-				this.getAttribute(Attributes.MAX_HEALTH).addPermanentModifier(new AttributeModifier("biome", val, Operation.MULTIPLY_BASE));
+				this.getAttribute(Attributes.MAX_HEALTH).addPermanentModifier(new AttributeModifier("biome", val, Operation.ADD_MULTIPLIED_BASE));
 				this.setHealth(getMaxHealth());
 			}
 			val = adj.speed;
 			if (val != 0.0)
 			{
-				this.getAttribute(Attributes.MOVEMENT_SPEED).addPermanentModifier(new AttributeModifier("biome", val, Operation.MULTIPLY_BASE));
+				this.getAttribute(Attributes.MOVEMENT_SPEED).addPermanentModifier(new AttributeModifier("biome", val, Operation.ADD_MULTIPLIED_BASE));
 			}
 		}
 
@@ -442,7 +447,6 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 		if (stack.isEmpty() || stack.getItem() == Items.LEATHER_HELMET)
 		{
 			stack = new ItemStack(Items.LEATHER_HELMET);
-			CompoundTag nbt = stack.getOrCreateTagElement("display");
 			int color;
 			int subtype = getSubType();
 			if (subtype == 0)
@@ -457,7 +461,7 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 				color = 0xFF6A00;
 			else
 				color = 0xFFD800;
-			nbt.putInt("color", color);
+			stack.set(DataComponents.DYED_COLOR, new DyedItemColor(color, true));
 			this.setItemSlot(EquipmentSlot.HEAD, stack);
 		}
 	}
@@ -542,7 +546,7 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 		}
 		else if (subtype == 5)
 		{
-			MobEffect effect = MyConfig.useBlindness ? MobEffects.BLINDNESS : MobEffects.CONFUSION;
+			Holder<MobEffect> effect = MyConfig.useBlindness ? MobEffects.BLINDNESS : MobEffects.CONFUSION;
 			((Arrow) entity).addEffect(new MobEffectInstance(effect, MyConfig.yellowTime, 1));
 		}
 	}
@@ -600,8 +604,7 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 		newmob.moveTo(mobpos.x(), mobpos.y(), mobpos.z(), mob.getYRot(), mob.getXRot());
 		newmob.entityData.set(SUB_TYPE, getSubType());
 
-		newmob.finalizeSpawn(world, world.getCurrentDifficultyAt(BlockPos.containing(mobpos)), MobSpawnType.CONVERSION, (SpawnGroupData) null,
-				(CompoundTag) null);
+		newmob.finalizeSpawn(world, world.getCurrentDifficultyAt(BlockPos.containing(mobpos)), MobSpawnType.CONVERSION, (SpawnGroupData) null);
 
 		if (mob instanceof Mob)
 		{
@@ -611,7 +614,7 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 			{
 				stack = from.getItemBySlot(slot);
 				newmob.setItemSlot(slot, stack.copyAndClear());
-				newmob.setDropChance(slot, getEquipmentDropChance(slot));
+				newmob.setDropChance(slot, from.getEquipmentDropChance(slot));
 			}
 			newmob.setCanPickUpLoot(from.canPickUpLoot());
 			if (from.isPersistenceRequired())

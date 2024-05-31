@@ -12,11 +12,10 @@ import net.minecraft.world.phys.EntityHitResult;
 
 public class MagicArrowEntity extends AbstractArrow
 {
-	private static final ItemStack DEFAULT_ARROW_STACK = new ItemStack(ModItems.MAGIC_ARROW);
 	private LivingEntity hitEntity = null;
 
 	public MagicArrowEntity(EntityType<? extends MagicArrowEntity> type, Level world) {
-		super(type, world, DEFAULT_ARROW_STACK);
+		super(type, world);
 	}
 
 	public MagicArrowEntity(Level worldIn, double x, double y, double z, ItemStack stack) {
@@ -44,5 +43,10 @@ public class MagicArrowEntity extends AbstractArrow
 				hitEntity.hurt(damageSources().magic(), damage);
 			}
 		}
+	}
+
+	@Override
+	protected ItemStack getDefaultPickupItem() {
+		return new ItemStack(ModItems.MAGIC_ARROW);
 	}
 }

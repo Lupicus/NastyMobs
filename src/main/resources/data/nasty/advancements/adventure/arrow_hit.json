@@ -2,8 +2,7 @@
   "parent": "minecraft:adventure/root",
   "display": {
     "icon": {
-      "item": "minecraft:arrow",
-      "nbt": "{Damage:0}"
+      "id": "minecraft:arrow"
     },
     "title": {
       "translate": "advancements.adventure.nasty.arrow_hit.title"

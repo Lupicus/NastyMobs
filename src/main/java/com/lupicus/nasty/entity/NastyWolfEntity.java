@@ -3,21 +3,20 @@ package com.lupicus.nasty.entity;
 import com.lupicus.nasty.config.MyConfig;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.MobType;
 import net.minecraft.world.entity.PathfinderMob;
-import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
@@ -34,6 +33,7 @@ import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -65,8 +65,8 @@ public class NastyWolfEntity extends Wolf implements Enemy // Monster
 		this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
 		//this.targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
 		//this.targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
-		//this.targetSelector.addGoal(3, (new HurtByTargetGoal(this)).setAlertOthers());
-		//this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, this::func_233680_b_));
+		//this.targetSelector.addGoal(3, new HurtByTargetGoal(this).setAlertOthers());
+		//this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, this::isAngryAt));
 		this.targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, Animal.class, false, PREY_SELECTOR));		
 		//this.targetSelector.addGoal(6, new NonTameRandomTargetGoal<>(this, Turtle.class, false, Turtle.BABY_ON_LAND_SELECTOR));
 		//this.targetSelector.addGoal(7, new NearestAttackableTargetGoal<>(this, AbstractSkeleton.class, false));
@@ -79,12 +79,6 @@ public class NastyWolfEntity extends Wolf implements Enemy // Monster
 				.add(Attributes.MAX_HEALTH, 20.0D)
 				.add(Attributes.ATTACK_DAMAGE, 4.0D)
 				.add(Attributes.FOLLOW_RANGE, 32.0D);
-	}
-
-	@Override
-	public MobType getMobType()
-	{
-		return MobType.UNDEAD;
 	}
 
 	@Override
@@ -141,19 +135,24 @@ public class NastyWolfEntity extends Wolf implements Enemy // Monster
 	}
 
 	@Override
+	protected void applyTamingSideEffects()
+	{
+	}
+
+	@Override
 	public boolean canBeLeashed(Player player)
 	{
 		return false;
 	}
 
 	@Override
-	public boolean canMate(Animal otherAnimal)
+	public Wolf getBreedOffspring(ServerLevel world, AgeableMob otherMob)
 	{
-		return false;
+		return ModEntities.NASTY_WOLF.create(world);
 	}
 
 	@Override
-	public boolean canBreed()
+	public boolean canMate(Animal otherAnimal)
 	{
 		return false;
 	}
@@ -202,14 +201,20 @@ public class NastyWolfEntity extends Wolf implements Enemy // Monster
 		newmob.setInvulnerable(mob.isInvulnerable());
 		newmob.moveTo(mobpos.x(), mobpos.y(), mobpos.z(), mob.getYRot(), mob.getXRot());
 
-		newmob.finalizeSpawn(world, world.getCurrentDifficultyAt(BlockPos.containing(mobpos)), MobSpawnType.CONVERSION, (SpawnGroupData) null,
-				(CompoundTag) null);
+		newmob.finalizeSpawn(world, world.getCurrentDifficultyAt(BlockPos.containing(mobpos)), MobSpawnType.CONVERSION, new WolfPackData(mob.getVariant()));
 
 		newmob.setAge(mob.getAge());
 
 		if (mob instanceof Mob)
 		{
 			Mob from = (Mob) mob;
+			ItemStack stack;
+			for (EquipmentSlot slot : EquipmentSlot.values())
+			{
+				stack = from.getItemBySlot(slot);
+				newmob.setItemSlot(slot, stack.copyAndClear());
+				newmob.setDropChance(slot, from.getEquipmentDropChance(slot));
+			}
 			if (from.isPersistenceRequired())
 				newmob.setPersistenceRequired();
 			newmob.setNoAi(from.isNoAi());

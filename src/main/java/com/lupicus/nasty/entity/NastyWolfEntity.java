@@ -140,7 +140,7 @@ public class NastyWolfEntity extends Wolf implements Enemy // Monster
 	}
 
 	@Override
-	public boolean canBeLeashed(Player player)
+	public boolean canBeLeashed()
 	{
 		return false;
 	}

@@ -6,7 +6,25 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "minecraft:red_dye"
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 0.0,
+                "max": 2.0,
+                "type": "minecraft:uniform"
+              }
+            },
+            {
+              "enchantment": "minecraft:looting",
+              "function": "minecraft:enchanted_count_increase",
+              "count": {
+                "min": 0.0,
+                "max": 1.0
+              }
+            }
+          ],
+          "name": "minecraft:gold_nugget"
         }
       ]
     },
@@ -14,12 +32,6 @@
       "rolls": 1,
       "entries": [
         {
-          "weight": 15,
-          "type": "minecraft:loot_table",
-          "value": "nasty:entities/skeleton2"
-        },
-        {
-          "weight": 15,
           "type": "minecraft:item",
           "functions": [
             {
@@ -31,52 +43,18 @@
               }
             },
             {
-              "function": "minecraft:looting_enchant",
+              "enchantment": "minecraft:looting",
+              "function": "minecraft:enchanted_count_increase",
               "count": {
                 "min": 0.0,
                 "max": 1.0
               }
             }
           ],
-          "name": "minecraft:flint"
-        },
-        {
-          "weight": 15,
-          "type": "minecraft:item",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "min": 0.0,
-                "max": 2.0,
-                "type": "minecraft:uniform"
-              }
-            },
-            {
-              "function": "minecraft:looting_enchant",
-              "count": {
-                "min": 0.0,
-                "max": 1.0
-              }
-            }
-          ],
-          "name": "minecraft:iron_nugget"
-        },
-        {
-          "weight": 55,
-          "type": "minecraft:empty"
-        }
-      ]
-    },
-    {
-      "rolls": 1,
-      "entries": [
-        {
-          "type": "minecraft:loot_table",
-          "value": "nasty:entities/skeleton"
+          "name": "minecraft:bone"
         }
       ]
     }
   ],
-  "random_sequence": "nasty:entities/skeleton/1"
+  "random_sequence": "nasty:entities/skeleton"
 }

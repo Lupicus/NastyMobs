@@ -12,8 +12,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public class NastyWolfRenderer extends WolfRenderer
 {
-	public static final ResourceLocation TEXTURE = new ResourceLocation(Main.MODID, "textures/entity/wolf.png");
-	public static final ResourceLocation ANGRY_TEXTURE = new ResourceLocation(Main.MODID, "textures/entity/wolf_angry.png");
+	public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Main.MODID, "textures/entity/wolf.png");
+	public static final ResourceLocation ANGRY_TEXTURE = ResourceLocation.fromNamespaceAndPath(Main.MODID, "textures/entity/wolf_angry.png");
 
 	public NastyWolfRenderer(EntityRendererProvider.Context renderManagerIn)
 	{

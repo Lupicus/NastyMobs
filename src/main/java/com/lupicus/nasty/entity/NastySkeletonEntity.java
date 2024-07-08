@@ -1,10 +1,12 @@
 package com.lupicus.nasty.entity;
 
 import java.util.HashMap;
+
 import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
 
+import com.lupicus.nasty.Main;
 import com.lupicus.nasty.config.MyConfig;
 import com.lupicus.nasty.entity.ai.controller.JumpMovementController;
 import com.lupicus.nasty.entity.ai.goal.SpreadVirusGoal;
@@ -16,6 +18,7 @@ import com.mojang.logging.LogUtils;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.Holder.Reference;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -71,6 +74,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ProjectileWeaponItem;
 import net.minecraft.world.item.component.DyedItemColor;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
+import net.minecraft.world.item.enchantment.ItemEnchantments.Mutable;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -88,6 +95,11 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 	private static boolean singleVariant = false;
 	private static HashMap<String,AdjParms> biomeMap = new HashMap<>();
 	private static final EntityDataAccessor<Integer> SUB_TYPE = SynchedEntityData.defineId(NastySkeletonEntity.class, EntityDataSerializers.INT);
+	private static final ResourceLocation HARD_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(Main.MODID, "difficulty");
+	private static final ResourceLocation BIOME_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(Main.MODID, "biome");
+	private int adjPunch = 0;
+	private ItemEnchantments bowEnchantments = null;
+	private ItemEnchantments adjEnchantments = null;
 	private final RangedBowAttackGoal<NastySkeletonEntity> bowGoal = new RangedBowAttackGoal<>(this, 1.0D, 20, 40.0F);
 	private final MeleeAttackGoal meleeGoal = new MeleeAttackGoal(this, 1.2D, false) {
 		/**
@@ -200,7 +212,7 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 	public ResourceKey<LootTable> getDefaultLootTable()
 	{
 		ResourceLocation res = super.getDefaultLootTable().location();
-		return ResourceKey.create(Registries.LOOT_TABLE, new ResourceLocation(res.getNamespace(), res.getPath() + "/" + getSubType()));
+		return ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(res.getNamespace(), res.getPath() + "/" + getSubType()));
 	}
 
 	/**
@@ -253,7 +265,7 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 
 		if (difficultyIn.getDifficulty() == Difficulty.HARD)
 		{
-			this.getAttribute(Attributes.ATTACK_DAMAGE).addPermanentModifier(new AttributeModifier("difficulty", 3.0, Operation.ADD_VALUE));
+			this.getAttribute(Attributes.ATTACK_DAMAGE).addPermanentModifier(new AttributeModifier(HARD_MODIFIER_ID, 3.0, Operation.ADD_VALUE));
 		}
 
 		spawnDataIn = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn);
@@ -296,13 +308,13 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 			double val = adj.hp;
 			if (val != 0.0)
 			{
-				this.getAttribute(Attributes.MAX_HEALTH).addPermanentModifier(new AttributeModifier("biome", val, Operation.ADD_MULTIPLIED_BASE));
+				this.getAttribute(Attributes.MAX_HEALTH).addPermanentModifier(new AttributeModifier(BIOME_MODIFIER_ID, val, Operation.ADD_MULTIPLIED_BASE));
 				this.setHealth(getMaxHealth());
 			}
 			val = adj.speed;
 			if (val != 0.0)
 			{
-				this.getAttribute(Attributes.MOVEMENT_SPEED).addPermanentModifier(new AttributeModifier("biome", val, Operation.ADD_MULTIPLIED_BASE));
+				this.getAttribute(Attributes.MOVEMENT_SPEED).addPermanentModifier(new AttributeModifier(BIOME_MODIFIER_ID, val, Operation.ADD_MULTIPLIED_BASE));
 			}
 		}
 
@@ -332,10 +344,11 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 					throw new Exception("bad number of fields");
 				String biomeName = fields[0].trim();
 				String variant = fields[1].trim();
-//				Biome biome = ForgeRegistries.BIOMES.getValue(new ResourceLocation(biomeName));
+				ResourceLocation res = ResourceLocation.parse(biomeName);
+//				Biome biome = ForgeRegistries.BIOMES.getValue(res);
 //				if (biome == null)
 //					throw new Exception("bad biome value");
-				new ResourceLocation(biomeName);
+				biomeName = res.toString();
 				if (!variant.equals("*"))
 				{
 					int j = Integer.parseInt(variant);
@@ -471,7 +484,7 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 	{
 		ItemStack bow = getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof BowItem));
 		ItemStack itemstack = getProjectile(bow);
-		AbstractArrow abstractarrowentity = this.getArrow(itemstack, distanceFactor);
+		AbstractArrow abstractarrowentity = this.getArrow(itemstack, distanceFactor, bow);
 		if (bow.getItem() instanceof BowItem bowItem)
 			abstractarrowentity = bowItem.customArrow(abstractarrowentity);
 		enchantArrow(abstractarrowentity);
@@ -524,7 +537,24 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 			entity.setBaseDamage(entity.getBaseDamage() + (double) (i + 1) * 0.5D);
 
 		if (j > 0)
-			entity.setKnockback(j);
+		{
+			// add innate punch to bow copy
+			ItemStack bow = entity.getWeaponItem();
+			if (bow != null)
+			{
+				ItemEnchantments enchantments = bow.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
+				if (j != adjPunch || enchantments != bowEnchantments)
+				{
+					adjPunch = j;
+					bowEnchantments = enchantments;
+					Mutable mutable = new ItemEnchantments.Mutable(enchantments);
+					Reference<Enchantment> punch = level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.PUNCH);
+					mutable.upgrade(punch, j);
+					adjEnchantments = mutable.toImmutable();
+				}
+				bow.set(DataComponents.ENCHANTMENTS, adjEnchantments);
+			}
+		}
 
 		// set custom enchantment based on subtype
 		int subtype = getSubType();
@@ -638,7 +668,7 @@ public class NastySkeletonEntity extends AbstractSkeleton implements IHasVirus
 		world.addFreshEntity(newmob);
 		mob.discard();
 	}
-	
+
 	private static class AdjParms
 	{
 		public double hp;

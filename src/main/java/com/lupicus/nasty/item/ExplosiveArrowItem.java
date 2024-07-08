@@ -1,5 +1,7 @@
 package com.lupicus.nasty.item;
 
+import javax.annotation.Nullable;
+
 import com.lupicus.nasty.entity.ExplosiveArrowEntity;
 
 import net.minecraft.core.Direction;
@@ -18,14 +20,14 @@ public class ExplosiveArrowItem extends ArrowItem
 	}
 
 	@Override
-	public AbstractArrow createArrow(Level worldIn, ItemStack stack, LivingEntity shooter) {
-		ExplosiveArrowEntity arrowentity = new ExplosiveArrowEntity(worldIn, shooter, stack.copyWithCount(1));
+	public AbstractArrow createArrow(Level worldIn, ItemStack stack, LivingEntity shooter, @Nullable ItemStack weapon) {
+		ExplosiveArrowEntity arrowentity = new ExplosiveArrowEntity(worldIn, shooter, stack.copyWithCount(1), weapon);
 		return arrowentity;
 	}
 
 	@Override
 	public Projectile asProjectile(Level worldIn, Position position, ItemStack stack, Direction dir) {
-		AbstractArrow arrowentity = new ExplosiveArrowEntity(worldIn, position.x(), position.y(), position.z(), stack.copyWithCount(1));
+		AbstractArrow arrowentity = new ExplosiveArrowEntity(worldIn, position.x(), position.y(), position.z(), stack.copyWithCount(1), null);
 		arrowentity.pickup = AbstractArrow.Pickup.ALLOWED;
 		return arrowentity;
 	}

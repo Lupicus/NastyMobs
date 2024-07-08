@@ -10,7 +10,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class MagicArrowRenderer extends ArrowRenderer<MagicArrowEntity> {
-	public static final ResourceLocation ARROW_LOCATION = new ResourceLocation("textures/entity/projectiles/arrow.png");
+	public static final ResourceLocation ARROW_LOCATION = ResourceLocation.withDefaultNamespace("textures/entity/projectiles/arrow.png");
 
 	public MagicArrowRenderer(EntityRendererProvider.Context renderManagerIn) {
 		super(renderManagerIn);

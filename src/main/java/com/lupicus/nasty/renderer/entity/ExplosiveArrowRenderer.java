@@ -10,7 +10,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class ExplosiveArrowRenderer extends ArrowRenderer<ExplosiveArrowEntity> {
-	public static final ResourceLocation ARROW_LOCATION = new ResourceLocation("textures/entity/projectiles/arrow.png");
+	public static final ResourceLocation ARROW_LOCATION = ResourceLocation.withDefaultNamespace("textures/entity/projectiles/arrow.png");
 
 	public ExplosiveArrowRenderer(EntityRendererProvider.Context renderManagerIn) {
 		super(renderManagerIn);

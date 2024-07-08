@@ -2,6 +2,8 @@ package com.lupicus.nasty.entity;
 
 import java.util.ArrayList;
 
+import javax.annotation.Nullable;
+
 import com.lupicus.nasty.config.MyConfig;
 import com.lupicus.nasty.item.ModItems;
 import com.lupicus.nasty.sound.ModSounds;
@@ -16,6 +18,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
@@ -40,14 +43,14 @@ public class ExplosiveArrowEntity extends AbstractArrow
 		super(type, world);
 	}
 
-	public ExplosiveArrowEntity(Level worldIn, double x, double y, double z, ItemStack stack)
+	public ExplosiveArrowEntity(Level worldIn, double x, double y, double z, ItemStack stack, @Nullable ItemStack weapon)
 	{
-		super(ModEntities.EXPLOSIVE_ARROW, x, y, z, worldIn, stack);
+		super(ModEntities.EXPLOSIVE_ARROW, x, y, z, worldIn, stack, weapon);
 	}
 
-	public ExplosiveArrowEntity(Level worldIn, LivingEntity shooter, ItemStack stack)
+	public ExplosiveArrowEntity(Level worldIn, LivingEntity shooter, ItemStack stack, @Nullable ItemStack weapon)
 	{
-		super(ModEntities.EXPLOSIVE_ARROW, shooter, worldIn, stack);
+		super(ModEntities.EXPLOSIVE_ARROW, shooter, worldIn, stack, weapon);
 	}
 
 	@Override
@@ -128,7 +131,7 @@ public class ExplosiveArrowEntity extends AbstractArrow
 			// if blocking with shield then it is dropped
 			// else random armor slot is picked and that is dropped
 			if (!blocking)
-				slot = EquipmentSlot.byTypeAndIndex(EquipmentSlot.Type.ARMOR, random.nextInt(4));
+				slot = randomArmorSlot(le);
 			ItemStack stack = le.getItemBySlot(slot);
 			if (!stack.isEmpty()) {
 				le.setItemSlot(slot, ItemStack.EMPTY);
@@ -145,6 +148,19 @@ public class ExplosiveArrowEntity extends AbstractArrow
 			if (isAlive())
 				discard();
 		}
+	}
+
+	private EquipmentSlot randomArmorSlot(LivingEntity entity)
+	{
+		if (entity instanceof Mob mob && mob.isWearingBodyArmor())
+			return EquipmentSlot.BODY;
+		int index = random.nextInt(4);
+		for (EquipmentSlot v : EquipmentSlot.values())
+		{
+			if (v.getType() == EquipmentSlot.Type.HUMANOID_ARMOR && v.getIndex() == index)
+				return v;
+		}
+		return EquipmentSlot.CHEST;
 	}
 
 	/**

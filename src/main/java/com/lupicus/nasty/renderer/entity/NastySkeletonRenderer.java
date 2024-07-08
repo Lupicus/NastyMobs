@@ -13,12 +13,12 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class NastySkeletonRenderer extends SkeletonRenderer<NastySkeletonEntity>
 {
 	private static final ResourceLocation[] TEXTURES = {
-			new ResourceLocation(Main.MODID, "textures/entity/skeleton_0.png"),
-			new ResourceLocation(Main.MODID, "textures/entity/skeleton_1.png"),
-			new ResourceLocation(Main.MODID, "textures/entity/skeleton_2.png"),
-			new ResourceLocation(Main.MODID, "textures/entity/skeleton_3.png"),
-			new ResourceLocation(Main.MODID, "textures/entity/skeleton_4.png"),
-			new ResourceLocation(Main.MODID, "textures/entity/skeleton_5.png"),
+			ResourceLocation.fromNamespaceAndPath(Main.MODID, "textures/entity/skeleton_0.png"),
+			ResourceLocation.fromNamespaceAndPath(Main.MODID, "textures/entity/skeleton_1.png"),
+			ResourceLocation.fromNamespaceAndPath(Main.MODID, "textures/entity/skeleton_2.png"),
+			ResourceLocation.fromNamespaceAndPath(Main.MODID, "textures/entity/skeleton_3.png"),
+			ResourceLocation.fromNamespaceAndPath(Main.MODID, "textures/entity/skeleton_4.png"),
+			ResourceLocation.fromNamespaceAndPath(Main.MODID, "textures/entity/skeleton_5.png"),
 	};
 
 	public NastySkeletonRenderer(EntityRendererProvider.Context renderManagerIn) {

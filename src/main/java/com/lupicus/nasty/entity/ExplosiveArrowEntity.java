@@ -17,20 +17,22 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Explosion.BlockInteraction;
 import net.minecraft.world.level.ExplosionDamageCalculator;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.ForgeEventFactory;
 
@@ -54,17 +56,13 @@ public class ExplosiveArrowEntity extends Arrow
 	}
 
 	@Override
-	protected void onHit(HitResult raytraceResultIn)
+	protected void onHitBlock(BlockHitResult result)
 	{
-		super.onHit(raytraceResultIn);
-		if (raytraceResultIn.getType() == HitResult.Type.BLOCK)
-		{
-			BlockHitResult result = (BlockHitResult) raytraceResultIn;
-			target = result.getBlockPos();
-			//world.createExplosion(this, target.getX()+0.5, target.getY()+0.5, target.getZ()+0.5, 0.5F, Explosion.BlockInteraction.DESTROY);
-			createExplosion(target.getX()+0.5, target.getY()+0.5, target.getZ()+0.5, 0.5F, Explosion.BlockInteraction.DESTROY);
-			this.discard();
-		}
+		super.onHitBlock(result);
+		target = result.getBlockPos().immutable();
+		//world.createExplosion(this, target.getX()+0.5, target.getY()+0.5, target.getZ()+0.5, 0.5F, Explosion.BlockInteraction.DESTROY);
+		createExplosion(target.getX()+0.5, target.getY()+0.5, target.getZ()+0.5, 0.5F, Explosion.BlockInteraction.DESTROY);
+		this.discard();
 	}
 
 	private Explosion createExplosion(double x, double y, double z, float r, BlockInteraction mode)
@@ -142,16 +140,38 @@ public class ExplosiveArrowEntity extends Arrow
 				slot = EquipmentSlot.byTypeAndIndex(EquipmentSlot.Type.ARMOR, random.nextInt(4));
 			ItemStack stack = le.getItemBySlot(slot);
 			if (!stack.isEmpty()) {
+				boolean dropItem;
+				if (le instanceof Mob)
+				{
+					Mob mob = (Mob) le;
+					dropItem = false;
+					if (mob.level().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT))
+					{
+						float f = mob.getEquipmentDropChance(slot);
+						boolean flag = f > 1.0F;
+						if (!EnchantmentHelper.hasVanishingCurse(stack) && (mob.lastHurtByPlayerTime > 0 || flag) && random.nextFloat() < f) {
+							dropItem = true;
+							if (!flag && stack.isDamageableItem())
+								stack.setDamageValue(stack.getMaxDamage() - random.nextInt(1 + random.nextInt(Math.max(stack.getMaxDamage() - 3, 1))));
+						}
+					}
+					mob.setDropChance(slot, Mob.DEFAULT_EQUIPMENT_DROP_CHANCE);
+				}
+				else
+					dropItem = true;
 				le.setItemSlot(slot, ItemStack.EMPTY);
-				Level level = le.level();
-				Vec3 pos = le.position();
-				ItemEntity itementity = new ItemEntity(level, pos.x, pos.y + 1.0, pos.z, stack);
-				itementity.setDefaultPickUpDelay();
-				float f = random.nextFloat() * 0.5F;
-				float f1 = random.nextFloat() * ((float)Math.PI * 2F);
-				itementity.setDeltaMovement((double)(-Mth.sin(f1) * f), 0.2, (double)(Mth.cos(f1) * f));
-				level.addFreshEntity(itementity);
-				level.playSound(null, le.getX(), le.getY(), le.getZ(), ModSounds.ARMOR_DROP, le.getSoundSource(), 1.0F, 1.0F);
+				if (dropItem)
+				{
+					Level level = le.level();
+					Vec3 pos = le.position();
+					ItemEntity itementity = new ItemEntity(level, pos.x, pos.y + 1.0, pos.z, stack);
+					itementity.setDefaultPickUpDelay();
+					float f = random.nextFloat() * 0.5F;
+					float f1 = random.nextFloat() * ((float)Math.PI * 2F);
+					itementity.setDeltaMovement((double)(-Mth.sin(f1) * f), 0.2, (double)(Mth.cos(f1) * f));
+					level.playSound(null, le, ModSounds.ARMOR_DROP, le.getSoundSource(), 1.0F, 1.0F);
+					level.addFreshEntity(itementity);
+				}
 			}
 			if (isAlive())
 				discard();

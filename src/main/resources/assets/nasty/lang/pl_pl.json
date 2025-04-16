@@ -1,0 +1,17 @@
+{
+	"item.nasty.skeleton_spawn_egg": "Paskudne jajko szkieletu",
+	"item.nasty.wolf_spawn_egg": "Jajo przywoławcze obrzydliwego wilka",
+	"item.nasty.explosive_arrow": "Wybuchowa strzałka",
+	"item.nasty.magic_arrow": "Magiczna strzała",
+	"entity.nasty.skeleton": "Paskudny szkielet",
+	"entity.nasty.wolf": "Paskudny wilk",
+	"subtitles.nasty.item.armor.drop": "Krople sprzętu",
+	"advancements.adventure.nasty.arrow_hit.title": "Z drogi w centrum miasta!",
+	"advancements.adventure.nasty.arrow_hit.description": "Utrzymanie paskudnego szkieletu",
+	"advancements.adventure.nasty.kill_a_mob.title": "Słodka zemsta",
+	"advancements.adventure.nasty.kill_a_mob.description": "Zabij paskudny szkielet",
+	"advancements.adventure.nasty.kill_by_bow.title": "Jak to się czuje!",
+	"advancements.adventure.nasty.kill_by_bow.description": "Zabij paskudny szkielet z łukiem i strzałą",
+	"advancements.adventure.nasty.kill_all_mobs.title": "Paskudny zabójca",
+	"advancements.adventure.nasty.kill_all_mobs.description": "Zabij każdy rodzaj paskudnego szkieletu"
+}
